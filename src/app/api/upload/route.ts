@@ -1,69 +1,44 @@
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextApiRequest, NextApiResponse } from "next";
 import { IncomingForm } from 'formidable';
 import { promises as fs } from 'fs';
-import { v2 as cloudinary } from 'cloudinary';
+import path from 'path';
 
-// Configure Cloudinary
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
 
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ message: "Method not allowed" });
+  }
 
-
-export async function POST(request: NextRequest): Promise<Response> {
   try {
     const form = new IncomingForm({
+      uploadDir: path.join(process.cwd(), 'public/uploads'),
       keepExtensions: true,
       maxFileSize: 10 * 1024 * 1024, // 10MB
-      multiples: true,
     });
 
-    return new Promise((resolve) => {
-      form.parse(request as any, async (err, fields, files) => {
-        if (err) {
-          console.error('Form parsing error:', err);
-          resolve(NextResponse.json({ error: 'Failed to parse form' }, { status: 400 }));
-          return;
-        }
+    const imageUrls: string[] = [];
 
-        try {
-          const imageUrls: string[] = [];
-
-          // Handle multiple files
-          const images = Array.isArray(files.images) ? files.images : [files.images].filter(Boolean);
-
-          for (const file of images) {
-            if (file && file.filepath) {
-              // Upload to Cloudinary
-              const result = await cloudinary.uploader.upload(file.filepath, {
-                folder: 'bakery-products',
-              });
-
-              // Add Cloudinary URL to array
-              imageUrls.push(result.secure_url);
-
-              // Clean up local file
-              await fs.unlink(file.filepath);
-            }
-          }
-
-          resolve(NextResponse.json({
-            success: true,
-            imageUrls,
-            message: `Successfully uploaded ${imageUrls.length} image(s)`
-          }));
-
-        } catch (error) {
-          console.error('File processing error:', error);
-          resolve(NextResponse.json({ error: 'Failed to process files' }, { status: 500 }));
-        }
-      });
+    form.on('file', (field, file) => {
+      // Convert absolute path to relative URL path
+      const relativePath = file.filepath.replace(process.cwd() + '/public', '');
+      imageUrls.push(relativePath);
     });
 
+    form.parse(req, (err, fields, files) => {
+      if (err) {
+        console.error('Error parsing form:', err);
+        return res.status(500).json({ message: 'Error uploading files', error: err.message });
+      }
+
+      res.status(200).json({ imageUrls });
+    });
   } catch (error) {
     console.error('Upload error:', error);
-    return NextResponse.json({ error: 'Upload failed' }, { status: 500 });
+    res.status(500).json({ message: 'Error uploading files', error });
   }
 }

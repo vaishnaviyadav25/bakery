@@ -422,13 +422,12 @@ export default function HomePage() {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="relative w-full max-w-md h-80 rounded-2xl overflow-hidden shadow-2xl"
+          className="relative w-full max-w-sm sm:max-w-sm md:max-w-md h-80 sm:h-96 md:h-96 rounded-2xl overflow-hidden shadow-2xl"
         >
-          <Image
+          <img
             src="/image.jpeg"
             alt="About Teju"
-            fill
-            className="object-cover"
+            className="w-full h-full object-cover"
           />
         </motion.div>
       </div>

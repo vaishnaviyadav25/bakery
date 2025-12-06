@@ -131,6 +131,7 @@ const LoginPage: React.FC = () => {
               borderRadius: 4,
               border: "1px solid #ccc",
             }}
+            suppressHydrationWarning
           />
           <input
             type="password"
@@ -144,6 +145,7 @@ const LoginPage: React.FC = () => {
               borderRadius: 4,
               border: "1px solid #ccc",
             }}
+            suppressHydrationWarning
           />
 
           <button
@@ -160,6 +162,7 @@ const LoginPage: React.FC = () => {
               marginBottom: 15,
             }}
             disabled={loading}
+            suppressHydrationWarning
           >
             {loading ? "Logging in..." : "Login with Email"}
           </button>
@@ -179,6 +182,7 @@ const LoginPage: React.FC = () => {
               cursor: "pointer",
             }}
             disabled={loading}
+            suppressHydrationWarning
           >
             {loading ? "Logging in..." : "Login with Google"}
           </button>

@@ -1,47 +1,33 @@
-import { NextRequest, NextResponse } from "next/server";
+import type { NextApiRequest, NextApiResponse } from "next";
 import { ObjectId } from "mongodb";
 import clientPromise from "@/lib/mongodb";
 
-export async function PATCH(request: NextRequest) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== "PUT") {
+    return res.status(405).json({ message: "Method not allowed" });
+  }
+
   try {
-    const { searchParams } = new URL(request.url);
-    const isAdmin = searchParams.get("isAdmin");
-    const email = searchParams.get("email");
-
-    if (!isAdmin || !email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const { orderId, newStatus, newPaymentStatus } = await request.json();
-    if (!orderId) return NextResponse.json({ error: "Order ID is required" }, { status: 400 });
-
-    const client = await clientPromise; // Reuse the shared client
+    const client = await clientPromise;
     const db = client.db("meetbakery");
-    const collection = db.collection("orders");
+    const { orderId, status } = req.body;
 
-    const updateData: any = {};
-    if (newStatus) {
-      updateData.orderStatus = newStatus;
-      if (newStatus === "delivered") updateData.deliveryDate = new Date().toISOString();
-    }
-    if (newPaymentStatus) updateData["payment.status"] = newPaymentStatus;
-
-    if (Object.keys(updateData).length === 0) {
-      return NextResponse.json({ error: "No valid fields to update" }, { status: 400 });
+    if (!orderId || !status) {
+      return res.status(400).json({ message: "Order ID and status are required" });
     }
 
-    const result = await collection.updateOne(
+    const result = await db.collection("orders").updateOne(
       { _id: new ObjectId(orderId) },
-      { $set: updateData }
+      { $set: { status, updatedAt: new Date() } }
     );
 
     if (result.matchedCount === 0) {
-      return NextResponse.json({ error: "Order not found" }, { status: 404 });
+      return res.status(404).json({ message: "Order not found" });
     }
 
-    return NextResponse.json({ success: true });
+    res.status(200).json({ message: "Order status updated", result });
   } catch (error) {
-    console.error("Error updating order status:", error);
-    return NextResponse.json({ error: "Failed to update order status" }, { status: 500 });
+    console.error(error);
+    res.status(500).json({ message: "Error updating order status", error });
   }
 }

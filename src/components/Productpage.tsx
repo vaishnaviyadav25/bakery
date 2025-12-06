@@ -78,10 +78,12 @@ export default function Productpage() {
   });
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
-    });
-    return () => unsubscribe();
+    if (auth) {
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        setCurrentUser(user);
+      });
+      return () => unsubscribe();
+    }
   }, []);
 
   useEffect(() => {
@@ -105,74 +107,7 @@ export default function Productpage() {
       } catch (error) {
         console.error('Error fetching products:', error);
         // Fallback to default products if API fails
-        setProducts([
-          {
-            id: 1,
-            category: "Cakes",
-            name: "Chocolate Cake",
-            price: 450,
-            images: ["/Mylogo.png"],
-            desc: "Rich and decadent chocolate cake, perfect for celebrations",
-            material: "Chocolate, flour, sugar, eggs",
-            size: "8-inch round",
-            care: "Store in refrigerator",
-          },
-          {
-            id: 2,
-            category: "Cupcakes",
-            name: "Vanilla Cupcakes",
-            price: 350,
-            images: ["/Mylogo.png"],
-            desc: "Classic vanilla cupcakes with buttercream frosting",
-            material: "Flour, sugar, butter, vanilla",
-            size: "12 pieces",
-            care: "Keep in cool place",
-          },
-          {
-            id: 3,
-            category: "Cookies",
-            name: "Chocolate Chip Cookies",
-            price: 120,
-            images: ["/Mylogo.png"],
-            desc: "Freshly baked chocolate chip cookies with gooey centers",
-            material: "Flour, chocolate chips, butter, sugar",
-            size: "12 pieces",
-            care: "Store in airtight container",
-          },
-          {
-            id: 4,
-            category: "Pastries",
-            name: "Croissants",
-            price: 650,
-            images: ["/Mylogo.png"],
-            desc: "Buttery and flaky croissants, baked fresh daily",
-            material: "Flour, butter, yeast, milk",
-            size: "6 pieces",
-            care: "Best served warm",
-          },
-          {
-            id: 5,
-            category: "Bread",
-            name: "Sourdough Bread",
-            price: 280,
-            images: ["/Mylogo.png"],
-            desc: "Artisanal sourdough bread with crispy crust",
-            material: "Flour, water, salt, starter",
-            size: "1 loaf",
-            care: "Store at room temperature",
-          },
-          {
-            id: 6,
-            category: "Desserts",
-            name: "Tiramisu",
-            price: 180,
-            images: ["/Mylogo.png"],
-            desc: "Classic Italian tiramisu with coffee and mascarpone",
-            material: "Ladyfingers, coffee, mascarpone, cocoa",
-            size: "Serves 4",
-            care: "Refrigerate until serving",
-          },
-        ]);
+       
       } finally {
         setLoading(false);
       }
@@ -278,7 +213,7 @@ export default function Productpage() {
     router.push("/cart");
   };
 
-  const categories = Array.from(new Set(products.map((p) => p.category)));
+  const categories = Array.from(new Set(products && Array.isArray(products) ? products.map((p) => p.category) : []));
 
   const handleEdit = (product: Product) => {
     setEditingProduct(product);

@@ -1,66 +1,29 @@
-import { NextRequest, NextResponse } from "next/server";
+import type { NextApiRequest, NextApiResponse } from "next";
 import clientPromise from "@/lib/mongodb";
 
-// POST a new order
-export async function POST(request: NextRequest) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const orderData = await request.json();
-
-    // Validate required fields
-    if (!orderData || !orderData.customer || !orderData.items) {
-      return NextResponse.json({ error: "Invalid order data" }, { status: 400 });
-    }
-
     const client = await clientPromise;
     const db = client.db("meetbakery");
-    const collection = db.collection("orders");
 
-    // Set default values
-    const now = new Date().toISOString();
-    const newOrder = {
-      ...orderData,
-      orderDate: orderData.orderDate || now,
-      orderStatus: orderData.orderStatus || "pending",
-      payment: {
-        status: orderData.payment?.status || "pending",
-        ...orderData.payment,
-      },
-      deliveryDate:
-        orderData.deliveryDate ||
-        (orderData.orderStatus === "delivered" ? now : null),
-    };
-
-    const result = await collection.insertOne(newOrder);
-
-    return NextResponse.json({ success: true, orderId: result.insertedId });
-  } catch (error) {
-    console.error("Error creating order:", error);
-    return NextResponse.json({ error: "Failed to create order" }, { status: 500 });
-  }
-}
-
-// GET orders by customer email
-export async function GET(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const email = searchParams.get("email");
-
-    if (!email) {
-      return NextResponse.json({ orders: [] }, { status: 400 });
+    if (req.method === "GET") {
+      // Get all orders (admin only)
+      const orders = await db.collection("orders").find({}).sort({ createdAt: -1 }).toArray();
+      res.status(200).json(orders);
+    } else if (req.method === "POST") {
+      // Create new order
+      const order = req.body;
+      const result = await db.collection("orders").insertOne({
+        ...order,
+        createdAt: new Date(),
+        status: "pending"
+      });
+      res.status(201).json({ message: "Order created", orderId: result.insertedId });
+    } else {
+      res.status(405).json({ message: "Method not allowed" });
     }
-
-    const client = await clientPromise;
-    const db = client.db("meetbakery");
-    const collection = db.collection("orders");
-
-    const orders = await collection
-      .find({ "customer.email": email })
-      .sort({ orderDate: -1 })
-      .toArray();
-
-    return NextResponse.json({ orders });
   } catch (error) {
-    console.error("Error fetching orders:", error);
-    return NextResponse.json({ orders: [] }, { status: 500 });
+    console.error(error);
+    res.status(500).json({ message: "Error processing request", error });
   }
 }
