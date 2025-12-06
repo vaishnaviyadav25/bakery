@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     await client.connect();
     const database = client.db('meetbakery');

@@ -5,19 +5,19 @@ import Footerpage from "@/components/Footerpage"
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Return Policy – Vaishi",
-  description: "Read Vaishi’s Return Policy. We accept returns only for defective pieces with proof of unboxing video for a smooth resolution.",
-  keywords: ["Vaishi return policy", "refund", "defective product", "exchange policy", "Vaishi store"],
+  title: "Return Policy - Meet Bakery Cakes & Cupcakes",
+  description: "Read Meet Bakery's Return Policy for cakes, cupcakes, and brownies. We accept returns only for defective items with unboxing video proof for smooth resolution.",
+  keywords: ["bakery return policy", "cake returns", "cupcake refunds", "brownie exchange", "bakery store", "defective baked goods"],
   openGraph: {
-    title: "Return Policy – Vaishi",
-    description: "Understand Vaishi’s return process for defective items with unboxing proof.",
-    images: ["/Mylogo.png"],
+    title: "Return Policy - Meet Bakery",
+    description: "Understand Meet Bakery's return process for defective cakes and cupcakes with unboxing proof.",
+    images: ["/bakerylogo.png"],
   },
   twitter: {
     card: "summary",
-    title: "Return Policy – Vaishi",
-    description: "Learn how to request a return for defective items with proof of unboxing.",
-    images: ["/Mylogo.png"],
+    title: "Return Policy - Meet Bakery",
+    description: "Learn how to request a return for defective cakes, cupcakes, or brownies with proof of unboxing.",
+    images: ["/bakerylogo.png"],
   },
 };
 
@@ -84,7 +84,7 @@ export default function ReturnPolicy() {
           To raise a return request, please contact us:
         </p>
         <div className="bg-pink-100 rounded-lg p-4 text-gray-700">
-         📧 <strong>Email:</strong> vaishnaviyadav25march@gmail.com <br />
+         📧 <strong>Email:</strong> tehzuqureshi019@gmail.com <br />
         </div>
 
       </div>

@@ -76,7 +76,7 @@ export default function MyOrdersPage() {
 
   const handleSubmitReview = async (rating: number, comment: string) => {
     try {
-      await axios.post('/api/review', {
+      await axios.post('/api/reviews', {
         orderId: selectedOrderId,
         rating,
         comment
@@ -85,10 +85,10 @@ export default function MyOrdersPage() {
       if (currentUser) {
         await fetchOrders(currentUser);
       }
-    } catch (error) {
-      console.error('Error submitting review:', error);
-      throw error;
-    }
+  } catch (error) {
+    console.error('Error submitting review:', error);
+    throw error;
+  }
   };
 
   const getStatusColor = (status: string | undefined) => {

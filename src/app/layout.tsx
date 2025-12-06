@@ -17,41 +17,37 @@ const geistMono = Geist_Mono({
 
 // ✅ SEO Metadata
 export const metadata: Metadata = {
-  title:" Vaishi Handmade Creations Bags,Charms ,keychain – Vaishi",
-  description:
-"Vaishi offers handcrafted mobile phone charms and flower hair clips made with love & care. Explore our exclusive collection and  grab exciting discounts now!",
+  title: "Meet Bakery - Fresh Cakes, Cupcakes & Brownies",
+  description: "Indulge in delicious homemade cakes, cupcakes, and brownies at Meet Bakery. Freshly baked treats made with love, perfect for every occasion.",
   keywords: [
-    "Vaishi",
-    "Vaishi handmade products",
-    "mobile phone charm",
-    "macrame keychain",
-    "fridge magnet",
-    "phone charms",
-     "hair accessory",
-     "flower hair clips for hair",
-     "crochet bags",
-     "phone keychain",
-     "charms for iphones",
-    "decorative handmade product",
+    "Meet Bakery",
+    "fresh cakes",
+    "homemade cupcakes",
+    "brownies",
+    "bakery treats",
+    "cake shop",
+    "cupcake delivery",
+    "brownie recipes",
+    "custom cakes",
+    "bakery online",
   ],
-  authors: [{ name: "Vaishi" }],
-  creator: "Vaishi",
-  publisher: "Vaishi",
+  authors: [{ name: "Meet Bakery" }],
+  creator: "Meet Bakery",
+  publisher: "Meet Bakery",
   icons: {
-    icon: "/Mylogo.png", // ✅ favicon in /public
+    icon: "/bakerylogo.png", // ✅ favicon in /public
   },
   openGraph: {
-    title: "Vaishi – Handcrafted with Love",
-    description:
-      "Discover Vaishi, where creativity meets craftsmanship. Explore our unique handmade creations.",
-    url: "https://vaishi.vercel.app", // ✅ absolute URL
-    siteName: "Vaishi",
+    title: "Meet Bakery - Fresh Cakes, Cupcakes & Brownies",
+    description: "Discover Meet Bakery for the finest homemade cakes, cupcakes, and brownies. Fresh, delicious, and made with love.",
+    url: "https://meetbakery.vercel.app", // ✅ absolute URL
+    siteName: "Meet Bakery",
     images: [
       {
-        url: "https://vaishi.vercel.app/logo.jpeg", // ✅ absolute URL for OG image
+        url: "https://meetbakery.vercel.app/bakerylogo.png", // ✅ absolute URL for OG image
         width: 600,
         height: 600,
-        alt: "Vaishi Logo",
+        alt: "Meet Bakery Logo",
       },
     ],
     locale: "en_US",
@@ -59,10 +55,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Vaishi – Handcrafted with Love",
-    description:
-      "Discover Vaishi’s beautiful handmade products crafted with creativity and passion.",
-    images: ["https://vaishi.vercel.app/Mylogo.png"], // ✅ absolute URL
+    title: "Meet Bakery - Fresh Cakes, Cupcakes & Brownies",
+    description: "Indulge in fresh homemade cakes, cupcakes, and brownies from Meet Bakery. Delicious treats for every craving.",
+    images: ["https://meetbakery.vercel.app/bakerylogo.png"], // ✅ absolute URL
   },
 };
 

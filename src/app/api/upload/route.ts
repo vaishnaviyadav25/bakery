@@ -1,7 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { IncomingForm } from 'formidable';
 import { promises as fs } from 'fs';
-import path from 'path';
+import { v2 as cloudinary } from 'cloudinary';
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 // Disable Next.js body parsing for file uploads
 export const config = {
@@ -10,24 +17,15 @@ export const config = {
   },
 };
 
-export async function POST(request: NextRequest) {
+export async function POST(request: NextRequest): Promise<Response> {
   try {
     const form = new IncomingForm({
-      uploadDir: path.join(process.cwd(), 'public/uploads'),
       keepExtensions: true,
       maxFileSize: 10 * 1024 * 1024, // 10MB
       multiples: true,
     });
 
-    // Ensure upload directory exists
-    const uploadDir = path.join(process.cwd(), 'public/uploads');
-    try {
-      await fs.access(uploadDir);
-    } catch {
-      await fs.mkdir(uploadDir, { recursive: true });
-    }
-
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       form.parse(request as any, async (err, fields, files) => {
         if (err) {
           console.error('Form parsing error:', err);
@@ -43,19 +41,16 @@ export async function POST(request: NextRequest) {
 
           for (const file of images) {
             if (file && file.filepath) {
-              // Generate unique filename
-              const timestamp = Date.now();
-              const random = Math.random().toString(36).substr(2, 9);
-              const ext = path.extname(file.originalFilename || 'image.jpg');
-              const filename = `v${timestamp}${random}${ext}`;
+              // Upload to Cloudinary
+              const result = await cloudinary.uploader.upload(file.filepath, {
+                folder: 'bakery-products',
+              });
 
-              const newPath = path.join(uploadDir, filename);
+              // Add Cloudinary URL to array
+              imageUrls.push(result.secure_url);
 
-              // Move file to new location
-              await fs.rename(file.filepath, newPath);
-
-              // Add to URLs array
-              imageUrls.push(`/uploads/${filename}`);
+              // Clean up local file
+              await fs.unlink(file.filepath);
             }
           }
 

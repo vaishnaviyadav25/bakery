@@ -1,16 +1,9 @@
-# Bakery App API Implementation TODO
+# Review Submission Fix
 
 ## Completed Tasks
-- [x] Create login API to save user details in users collection
-- [x] Promotional API for saving products in promotional collection (already existed)
-- [x] Best seller API for saving products in best-sellers collection (already existed)
-- [x] Buttons on product page for promotional and best seller (already existed)
-- [x] Fetch promotional and best-sellers data on homepage (already implemented)
+- [x] Identified the issue: Code was posting to '/api/review' but API route is '/api/reviews'
+- [x] Fixed endpoint in src/app/my-orders/page.tsx from '/api/review' to '/api/reviews'
+- [x] Fixed endpoint in src/app/order-success/page.tsx from '/api/review' to '/api/reviews'
 
 ## Summary
-All required APIs and functionalities are now in place:
-- `/api/users` - POST to save user details, GET to fetch users
-- `/api/promotional` - POST to add products, GET to fetch promotional items
-- `/api/best-sellers` - POST to add products, GET to fetch best sellers
-- Product page has admin-only buttons to add products to promotional/best-sellers
-- Homepage fetches and displays promotional and best-sellers data
+The review submission was failing because the frontend code was trying to POST to '/api/review', but the actual API route is '/api/reviews'. Updated both files to use the correct endpoint. The API route at /api/reviews handles POST requests to insert reviews into the MongoDB 'reviews' collection.

@@ -4,19 +4,19 @@ import Footerpage from "@/components/Footerpage"
 import type { Metadata } from "next";
   
 export const metadata: Metadata = {
-  title: "Terms and Conditions – Vaishi",
-  description: "Review Vaishi’s Terms and Conditions to understand our policies on orders, payments, and product use.",
-  keywords: ["Vaishi terms and conditions", "Vaishi policies", "online shopping rules", "Vaishi store", "terms of service"],
+  title: "Terms and Conditions - Meet Bakery",
+  description: "Review Meet Bakery's Terms and Conditions to understand our policies on cake orders, payments, and product use.",
+  keywords: ["Meet Bakery terms and conditions", "bakery policies", "cake shopping rules", "bakery store", "terms of service"],
   openGraph: {
-    title: "Terms and Conditions – Vaishi",
-    description: "Learn about Vaishi’s terms regarding orders, returns, and product usage.",
-    images: ["/Mylogo.png"],
+    title: "Terms and Conditions - Meet Bakery",
+    description: "Learn about Meet Bakery's terms regarding cake orders, returns, and product usage.",
+    images: ["/bakerylogo.png"],
   },
   twitter: {
     card: "summary",
-    title: "Terms and Conditions – Vaishi",
-    description: "Read Vaishi’s Terms of Service to understand our shopping and return policies.",
-    images: ["/Mylogo.png"],
+    title: "Terms and Conditions - Meet Bakery",
+    description: "Read Meet Bakery's Terms of Service to understand our cake shopping and return policies.",
+    images: ["/bakerylogo.png"],
   },
 };
 
@@ -100,7 +100,7 @@ export default function TermsAndConditions() {
         </p>
 
         <div className="bg-pink-100 rounded-lg p-4 text-gray-700 mb-6">
-            📧 <strong>Email:</strong> vaishnaviyadav25march@gmail.com <br />
+            📧 <strong>Email:</strong> tehzuqureshi019@gmail.com <br />
         </div>
 
       </div>

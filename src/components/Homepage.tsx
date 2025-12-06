@@ -8,7 +8,7 @@ import "swiper/css";
 import "swiper/css/autoplay";
 import "swiper/css/pagination";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import ReviewModal from "./ReviewModal";
 
@@ -18,13 +18,12 @@ export default function HomePage() {
   const [promotionalPosters, setPromotionalPosters] = useState<Array<{ title: string; subtitle: string; description: string; image: string; gradient: string; link: string; badge: string; }>>([]);
   const [bestSellers, setBestSellers] = useState<Array<{ title: string; subtitle: string; description: string; image: string; gradient: string; link: string; badge: string; }>>([]);
   const [showReviewModal, setShowReviewModal] = useState(false);
-  const [menuProducts, setMenuProducts] = useState<Array<{ id: number; category: string; name: string; price: number; images: string[]; desc: string; material: string; size: string; care: string }>>([]);
 
   useEffect(() => {
     const fetchReviews = async () => {
       try {
         const response = await axios.get('/api/reviews');
-        setReviews((response.data as any).reviews);
+        setReviews((response.data as any).reviews || []);
       } catch (error) {
         console.error('Error fetching reviews:', error);
         setReviews([
@@ -49,7 +48,7 @@ export default function HomePage() {
             title: "Chocolate Cake",
             subtitle: "₹650",
             description: "Rich & Decadent",
-            image: "/Bag.jpeg",
+            image: "/image.jpeg",
             gradient: "from-[#FFDEE9] via-[#B5FFFC] to-[#FFDEE9]",
             link: "/product",
             badge: "Best Seller",
@@ -58,7 +57,7 @@ export default function HomePage() {
             title: "Vanilla Cupcakes",
             subtitle: "₹250/dozen",
             description: "Classic & Creamy",
-            image: "/Keychain.jpeg",
+            image: "/2.jpeg",
             gradient: "from-[#FFDEE9] via-[#B5FFFC] to-[#FFDEE9]",
             link: "/product",
             badge: "New",
@@ -96,7 +95,7 @@ export default function HomePage() {
             title: "Chocolate Cake",
             subtitle: "₹650",
             description: "Rich & Decadent",
-            image: "/Bag.jpeg",
+            image: "/image.jpeg",
             gradient: "from-[#FFDEE9] via-[#B5FFFC] to-[#FFDEE9]",
             link: "/product",
             badge: "Best Seller",
@@ -105,7 +104,7 @@ export default function HomePage() {
             title: "Vanilla Cupcakes",
             subtitle: "₹250/dozen",
             description: "Classic & Creamy",
-            image: "/Keychain.jpeg",
+            image: "/2.jpeg",
             gradient: "from-[#FFDEE9] via-[#B5FFFC] to-[#FFDEE9]",
             link: "/product",
             badge: "New",
@@ -132,47 +131,29 @@ export default function HomePage() {
       }
     };
 
-    const fetchMenuProducts = async () => {
-      try {
-        const response = await axios.get('/api/products');
-        setMenuProducts(response.data as Array<{ id: number; category: string; name: string; price: number; images: string[]; desc: string; material: string; size: string; care: string }>);
-      } catch (error) {
-        console.error('Error fetching menu products:', error);
-        setMenuProducts([
-          // Keep your fallback products here (same as original)
-        ]);
-      }
-    };
+
 
     fetchReviews();
     fetchPromotionalProducts();
     fetchBestSellers();
-    fetchMenuProducts();
   }, []);
 
   const handleSubmitReview = async (rating: number, comment: string) => {
     try {
-      await axios.post('/api/review', {
+      await axios.post('/api/reviews', {
         rating,
         comment,
         type: 'general'
       });
       const response = await axios.get('/api/reviews');
-      setReviews((response.data as any).reviews);
+      setReviews((response.data as any).reviews || []);
     } catch (error) {
       console.error('Error submitting review:', error);
       throw error;
     }
   };
 
-  const groupedMenuProducts = useMemo(() => {
-    const grouped = menuProducts.reduce((acc, product) => {
-      if (!acc[product.category]) acc[product.category] = [];
-      acc[product.category].push({ name: product.name, price: `₹${product.price}` });
-      return acc;
-    }, {} as Record<string, Array<{ name: string; price: string }>>);
-    return Object.entries(grouped).map(([category, items]) => ({ category, items }));
-  }, [menuProducts]);
+
 
   const whyChooseUsItems = [
     { title: "Freshly Baked Daily", desc: "Every treat is baked fresh each morning using premium ingredients — made with love to bring you something truly special 🎁", icon: "🍰" },
@@ -407,28 +388,50 @@ export default function HomePage() {
 
 
       {/* 🌿 About Section */}
-    <section className="text-center py-20 px-6 md:px-20 bg-gradient-to-b from-white to-[#FFE8E6]">
-  <div className="max-w-4xl mx-auto">
+    <section className="py-20 px-6 md:px-20 bg-gradient-to-b from-white to-[#FFE8E6]">
+  <div className="max-w-6xl mx-auto">
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.8 }}
+      className="flex flex-col md:flex-row items-center gap-12"
     >
-      <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-[#B78B89] to-[#B78B89] bg-clip-text text-transparent">
-        About Me
-      </h2>
-      <div className="w-24 h-1.5 bg-gradient-to-r from-[#C49B9E] to-[#C49B9E] mx-auto mb-8 rounded-full"></div>
-      <p className="max-w-3xl mx-auto text-lg md:text-xl leading-relaxed text-[#A47573]">
-        Hi, I&apos;m <span className="font-semibold text-[#CCA6A2]">Teju</span> — a passionate
-        baker who finds joy in creating delicious treats. From rich{" "}
-        <span className="font-medium text-[#C49B9E]">chocolate cakes</span>, creamy{" "}
-        <span className="font-medium text-[#C49B9E]">vanilla cupcakes</span>, fluffy{" "}
-        <span className="font-medium text-[#C49B9E]">blueberry muffins</span>, to velvety{" "}
-        <span className="font-medium text-[#C49B9E]">red velvet cakes</span>, every baked good I create
-        carries a touch of warmth, quality ingredients, and love. My goal is to turn simple ingredients
-        into memorable experiences that bring joy and sweetness to your special moments ✨
-      </p>
+      {/* Left Side - About Content */}
+      <div className="flex-1 text-center md:text-left">
+        <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-[#B78B89] to-[#B78B89] bg-clip-text text-transparent">
+          About Me
+        </h2>
+        <div className="w-24 h-1.5 bg-gradient-to-r from-[#C49B9E] to-[#C49B9E] mx-auto md:mx-0 mb-8 rounded-full"></div>
+        <p className="text-lg md:text-xl leading-relaxed text-[#A47573]">
+          Hi, I&apos;m <span className="font-semibold text-[#CCA6A2]">Teju</span> — a passionate
+          baker who finds joy in creating delicious treats. From rich{" "}
+          <span className="font-medium text-[#C49B9E]">chocolate cakes</span>, creamy{" "}
+          <span className="font-medium text-[#C49B9E]">vanilla cupcakes</span>, fluffy{" "}
+          <span className="font-medium text-[#C49B9E]">blueberry muffins</span>, to velvety{" "}
+          <span className="font-medium text-[#C49B9E]">red velvet cakes</span>, every baked good I create
+          carries a touch of warmth, quality ingredients, and love. My goal is to turn simple ingredients
+          into memorable experiences that bring joy and sweetness to your special moments ✨
+        </p>
+      </div>
+
+      {/* Right Side - Image */}
+      <div className="flex-1 flex justify-center md:justify-end">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="relative w-full max-w-md h-80 rounded-2xl overflow-hidden shadow-2xl"
+        >
+          <Image
+            src="/image.jpeg"
+            alt="About Teju"
+            fill
+            className="object-cover"
+          />
+        </motion.div>
+      </div>
     </motion.div>
   </div>
 </section>
@@ -464,7 +467,7 @@ export default function HomePage() {
       <h3 className="text-2xl md:text-3xl font-bold text-[#CCA6A2] mb-2">
         🍰 Our Complete Menu
       </h3>
-      <p className="text-[#7D5A5F]">Swipe through our menu categories and full PDF</p>
+      <p className="text-[#7D5A5F]">Swipe through our menu categories </p>
     </div>
 
     <Swiper

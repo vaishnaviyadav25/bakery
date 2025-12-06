@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ShoppingCart, Home, Phone, ClipboardList, Menu as MenuIcon, X, FileText } from 'lucide-react';
+import { ShoppingCart, Home, Phone, ClipboardList, Menu as MenuIcon, X,} from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import { auth } from '@/context/firebase';
@@ -30,7 +30,7 @@ export const Navigation = () => {
 
   // Shared classes for all nav links
 // Thicker border with outer outline
-const navLinkClasses = "flex items-center gap-2 p-3 rounded-full border-4 border-[#EBBEC3] outline-2 outline-[#C49B9E] text-gray-800 hover:bg-[#EBBEC3]/50 transition-all";
+const navLinkClasses = "flex items-center gap-2 p-3 rounded-full border-2 border-[#EBBEC3] outline-2 outline-[#C49B9E] text-gray-800 hover:bg-[#fefefe]/70 transition-all";
 
   return (
     <motion.nav
@@ -38,7 +38,7 @@ const navLinkClasses = "flex items-center gap-2 p-3 rounded-full border-4 border
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5 }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300
-        ${isScrolled ? 'bg-[#EBBEC3]/90 backdrop-blur-md shadow-md' : 'bg-[#EBBEC3]/90 backdrop-blur-sm'}
+        ${isScrolled ? 'bg-[#fefefe] backdrop-blur-md shadow-md' : 'bg-[#fefefe] backdrop-blur-sm'}
       `}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between py-3">
@@ -93,6 +93,7 @@ const navLinkClasses = "flex items-center gap-2 p-3 rounded-full border-4 border
             </div>
           )}
 
+
           {/* My Orders - Authenticated users */}
           {currentUser && (
             <div className="flex flex-col items-center">
@@ -122,7 +123,7 @@ const navLinkClasses = "flex items-center gap-2 p-3 rounded-full border-4 border
 
         {/* 🍔 Mobile Menu Icon */}
         <button
-          className="md:hidden p-2 rounded-full hover:bg-[#EBBEC3]/50 transition-all"
+          className="md:hidden p-2 rounded-full hover:bg-[#f5e0d5]/50 transition-all"
           onClick={() => setMenuOpen(!menuOpen)}
         >
           {menuOpen ? <X size={24} /> : <MenuIcon size={24} />}
@@ -134,7 +135,7 @@ const navLinkClasses = "flex items-center gap-2 p-3 rounded-full border-4 border
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="md:hidden bg-[#EBBEC3]/90 border-t border-[#EBBEC3] px-6 py-4 flex flex-col gap-4 text-gray-700 font-medium"
+          className="md:hidden bg-[#fefefe]/95 border-t border-[#e5e5e5] px-6 py-4 flex flex-col gap-4 text-gray-700 font-medium"
         >
           {/** Desktop nav duplicated for mobile with shared navLinkClasses **/}
 
@@ -171,6 +172,8 @@ const navLinkClasses = "flex items-center gap-2 p-3 rounded-full border-4 border
               {pathname === '/admin/orders' && <div className="h-[2px] w-10 bg-[#C49B9E] mt-1 rounded-full"></div>}
             </div>
           )}
+
+         
 
           {/* My Orders */}
           {currentUser && (

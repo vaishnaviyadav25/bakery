@@ -3,19 +3,19 @@ import Footerpage from "@/components/Footerpage";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Contact Us – Vaishi",
-  description: "Get in touch with Vaishi for queries, orders, or collaborations. We're happy to help!",
-  keywords: ["Vaishi contact", "customer support", "help", "inquiry", "Vaishi shop"],
+  title: "Contact Meet Bakery - Order Cakes & Inquiries",
+  description: "Reach out to Meet Bakery for custom cake orders, cupcake inquiries, or any questions about our fresh baked goods. We're here to help!",
+  keywords: ["Meet Bakery contact", "cake orders", "cupcake inquiries", "bakery support", "custom brownies", "bakery shop"],
   openGraph: {
-    title: "Contact Us – Vaishi",
-    description: "Reach out to the Vaishi team for support or order assistance.",
-    images: ["/Smalllogo.png"],
+    title: "Contact Meet Bakery - Order Cakes & Inquiries",
+    description: "Get in touch with Meet Bakery for fresh cakes, cupcakes, and brownies. Custom orders and support available.",
+    images: ["/bakerylogo.png"],
   },
   twitter: {
     card: "summary",
-    title: "Contact Vaishi",
-    description: "Message us for product inquiries, custom orders, or feedback.",
-    images: ["/Smalllogo.png"],
+    title: "Contact Meet Bakery",
+    description: "Message us for cake orders, custom cupcakes, or bakery inquiries at Meet Bakery.",
+    images: ["/bakerylogo.png"],
   },
 };
 

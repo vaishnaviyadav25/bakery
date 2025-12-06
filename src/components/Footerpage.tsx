@@ -96,7 +96,7 @@ export default function Footer() {
           >
             <h3 className="text-lg font-semibold text-[#F7AFAE] mb-3">Contact Us</h3>
             <p className="text-gray-600 text-sm md:text-base">
-              📧 vaishnaviyadav25march@gmail.com
+              📧 tehzuqureshi019@gmail.com
             </p>
             <div className="flex justify-center md:justify-start gap-6 text-[#F9C9C5] text-2xl mt-4">
               <motion.a
@@ -108,7 +108,7 @@ export default function Footer() {
                 <Instagram />
               </motion.a>
               <motion.a
-                href="mailto:vaishnaviyadav25march@gmail.com"
+                href="mailto:tehzuqureshi019@gmail.com"
                 whileHover={{ scale: 1.2 }}
                 transition={{ type: "spring", stiffness: 200 }}
               >

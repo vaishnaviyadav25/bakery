@@ -4,7 +4,7 @@ import { MongoClient } from 'mongodb';
 const uri = process.env.MONGODB_URI || 'mongodb+srv://your-connection-string/meetbakery?retryWrites=true&w=majority';
 const client = new MongoClient(uri);
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     await client.connect();
     const database = client.db('meetbakery');

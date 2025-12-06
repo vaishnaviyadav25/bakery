@@ -4,7 +4,7 @@ import { MongoClient } from 'mongodb';
 const uri = process.env.MONGODB_URI || 'mongodb+srv://your-connection-string/meetbakery?retryWrites=true&w=majority';
 const client = new MongoClient(uri);
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     await client.connect();
     const database = client.db('meetbakery');
@@ -12,10 +12,17 @@ export async function GET(request: NextRequest) {
 
     const reviews = await collection.find({}).toArray();
 
-    return NextResponse.json({ reviews });
+    const transformedReviews = reviews.map(review => ({
+      text: review.comment,
+      name: 'Anonymous', // Since name is not stored
+      rating: review.rating,
+      date: review._id.getTimestamp().toISOString().split('T')[0] // Use creation date from _id
+    }));
+
+    return NextResponse.json({ reviews: transformedReviews });
   } catch (error) {
     console.error('Error fetching reviews:', error);
-    return NextResponse.json({ reviews: [] }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to fetch reviews' }, { status: 500 });
   } finally {
     await client.close();
   }

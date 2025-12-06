@@ -4,19 +4,19 @@ import Footerpage from "@/components/Footerpage";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Handcrafted Products – Vaishi",
-  description: "Explore Vaishi's handmade macramé bags, gifts, and decor crafted with love and creativity.",
-  keywords: ["Vaishi products", "handmade bags", "macrame", "craft shop", "handcrafted gifts", "Vaishi store"],
+  title: "Bakery Products - Cakes, Cupcakes & Brownies",
+  description: "Browse our delicious selection of fresh cakes, cupcakes, and brownies at Meet Bakery. Homemade treats made with premium ingredients.",
+  keywords: ["bakery products", "fresh cakes", "homemade cupcakes", "brownies", "cake shop", "cupcake varieties", "bakery treats"],
   openGraph: {
-    title: "Handcrafted Products – Vaishi",
-    description: "Shop beautifully crafted handmade products from Vaishi – where creativity meets care.",
-    images: ["/Mylogo.png"],
+    title: "Bakery Products - Cakes, Cupcakes & Brownies",
+    description: "Explore Meet Bakery's range of fresh baked cakes, cupcakes, and brownies. Quality ingredients, delicious flavors.",
+    images: ["/bakerylogo.png"],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Vaishi – Handcrafted Products",
-    description: "Discover unique handmade creations by Vaishi. Shop macramé bags, gifts, and decor.",
-    images: ["/Mylogo.png"],
+    title: "Meet Bakery - Bakery Products",
+    description: "Discover fresh cakes, cupcakes, and brownies at Meet Bakery. Homemade goodness for every occasion.",
+    images: ["/bakerylogo.png"],
   },
 };
 

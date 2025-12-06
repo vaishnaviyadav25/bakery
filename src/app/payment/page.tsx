@@ -67,7 +67,7 @@ export default function PaymentPage() {
     `Hello! I have placed an order and need to make payment.\n\nCustomer Name: ${orderData.customer.name}\nOrder ID: ${orderData.orderId}\nTotal Amount: ₹${orderData.payment.amount}\n\nPlease share your QR code for payment.`
   );
 
-  const whatsappUrl = `https://wa.me/917722893524?text=${whatsappMessage}`;
+  const whatsappUrl = `https://wa.me/919893375626?text=${whatsappMessage}`;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-50 to-pink-100 py-20 px-4 sm:px-6">

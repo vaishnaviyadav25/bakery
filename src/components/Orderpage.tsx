@@ -170,14 +170,7 @@ export default function OrderPage() {
       const result = await response.json();
       console.log("Order created:", result);
 
-      if (paymentMethod === "Online") {
-        // For online payment, save order data and redirect to payment page
-        localStorage.setItem("pendingOrder", JSON.stringify(orderData));
-        window.location.href = "/payment";
-        return;
-      }
-
-      // For COD, also submit to Formspree for backup
+      // Submit to Formspree for email notification
       try {
         const productSummary = itemsToShow
           .map(
@@ -192,7 +185,7 @@ export default function OrderPage() {
         formData.append("paymentMethod", paymentMethod);
         formData.append("orderId", orderId);
 
-        await fetch("https://formspree.io/f/manledon", {
+        await fetch("https://formspree.io/f/xrbnllep", {
           method: "POST",
           body: formData,
           headers: { Accept: "application/json" },
@@ -200,6 +193,13 @@ export default function OrderPage() {
       } catch (formspreeError) {
         console.warn("Formspree submission failed:", formspreeError);
         // Don't fail the order if Formspree fails
+      }
+
+      if (paymentMethod === "Online") {
+        // For online payment, save order data and redirect to payment page
+        localStorage.setItem("pendingOrder", JSON.stringify(orderData));
+        window.location.href = "/payment";
+        return;
       }
 
       // Clear cart and redirect to success

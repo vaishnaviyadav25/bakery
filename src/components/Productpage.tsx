@@ -57,6 +57,8 @@ export default function Productpage() {
   const searchParams = useSearchParams();
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [showEditForm, setShowEditForm] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [loading, setLoading] = useState(true);
@@ -106,69 +108,69 @@ export default function Productpage() {
         setProducts([
           {
             id: 1,
-            category: "Macramé",
-            name: "Heart Wall Hanging",
+            category: "Cakes",
+            name: "Chocolate Cake",
             price: 450,
             images: ["/Mylogo.png"],
-            desc: "Beautiful handmade macramé heart wall hanging, perfect for home decor",
-            material: "Cotton rope, wooden beads",
-            size: "30cm x 30cm",
-            care: "Dust gently with a soft cloth",
+            desc: "Rich and decadent chocolate cake, perfect for celebrations",
+            material: "Chocolate, flour, sugar, eggs",
+            size: "8-inch round",
+            care: "Store in refrigerator",
           },
           {
             id: 2,
-            category: "Macramé",
-            name: "Plant Hanger",
+            category: "Cupcakes",
+            name: "Vanilla Cupcakes",
             price: 350,
             images: ["/Mylogo.png"],
-            desc: "Elegant macramé plant hanger for your favorite indoor plants",
-            material: "Natural cotton rope",
-            size: "25cm diameter",
-            care: "Keep away from direct sunlight",
+            desc: "Classic vanilla cupcakes with buttercream frosting",
+            material: "Flour, sugar, butter, vanilla",
+            size: "12 pieces",
+            care: "Keep in cool place",
           },
           {
             id: 3,
-            category: "Keychains",
-            name: "Beaded Keychain",
+            category: "Cookies",
+            name: "Chocolate Chip Cookies",
             price: 120,
             images: ["/Mylogo.png"],
-            desc: "Colorful beaded keychain with unique design",
-            material: "Glass beads, metal ring",
-            size: "8cm length",
-            care: "Wipe with damp cloth",
+            desc: "Freshly baked chocolate chip cookies with gooey centers",
+            material: "Flour, chocolate chips, butter, sugar",
+            size: "12 pieces",
+            care: "Store in airtight container",
           },
           {
             id: 4,
-            category: "Bags & Pouches",
-            name: "Macramé Tote Bag",
+            category: "Pastries",
+            name: "Croissants",
             price: 650,
             images: ["/Mylogo.png"],
-            desc: "Handcrafted macramé tote bag, eco-friendly and stylish",
-            material: "Cotton rope, canvas lining",
-            size: "35cm x 40cm",
-            care: "Spot clean only",
+            desc: "Buttery and flaky croissants, baked fresh daily",
+            material: "Flour, butter, yeast, milk",
+            size: "6 pieces",
+            care: "Best served warm",
           },
           {
             id: 5,
-            category: "Wall Hangings",
-            name: "Dreamcatcher",
+            category: "Bread",
+            name: "Sourdough Bread",
             price: 280,
             images: ["/Mylogo.png"],
-            desc: "Traditional dreamcatcher with macramé details",
-            material: "Feathers, beads, cotton thread",
-            size: "20cm diameter",
-            care: "Hang in well-ventilated area",
+            desc: "Artisanal sourdough bread with crispy crust",
+            material: "Flour, water, salt, starter",
+            size: "1 loaf",
+            care: "Store at room temperature",
           },
           {
             id: 6,
-            category: "Jewelry",
-            name: "Macramé Bracelet",
+            category: "Desserts",
+            name: "Tiramisu",
             price: 180,
             images: ["/Mylogo.png"],
-            desc: "Handmade macramé bracelet with adjustable knot",
-            material: "Cotton cord, wooden beads",
-            size: "Adjustable",
-            care: "Remove before swimming",
+            desc: "Classic Italian tiramisu with coffee and mascarpone",
+            material: "Ladyfingers, coffee, mascarpone, cocoa",
+            size: "Serves 4",
+            care: "Refrigerate until serving",
           },
         ]);
       } finally {
@@ -278,6 +280,87 @@ export default function Productpage() {
 
   const categories = Array.from(new Set(products.map((p) => p.category)));
 
+  const handleEdit = (product: Product) => {
+    setEditingProduct(product);
+    setFormData({
+      category: product.category,
+      name: product.name,
+      price: product.price.toString(),
+      images: [],
+      desc: product.desc,
+      material: product.material,
+      size: product.size,
+      care: product.care,
+    });
+    setShowEditForm(true);
+  };
+
+  const handleDelete = async (productId: number) => {
+    if (!confirm('Are you sure you want to delete this product?')) return;
+
+    try {
+      await axios.delete(`/api/products/${productId}`);
+      setProducts(products.filter(p => p.id !== productId));
+      alert('Product deleted successfully!');
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      alert('Failed to delete product. Please try again.');
+    }
+  };
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingProduct) return;
+
+    try {
+      let imageUrls = editingProduct.images;
+
+      // Upload new images if any
+      if (formData.images.length > 0) {
+        const formDataUpload = new FormData();
+        formData.images.forEach((file) => {
+          formDataUpload.append('images', file);
+        });
+
+        const uploadResponse = await axios.post<UploadResponse>('/api/upload', formDataUpload, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+
+        imageUrls = uploadResponse.data.imageUrls;
+      }
+
+      // Update product
+      const productData = {
+        category: formData.category,
+        name: formData.name,
+        price: parseFloat(formData.price),
+        images: imageUrls,
+        desc: formData.desc,
+        material: formData.material,
+        size: formData.size,
+        care: formData.care,
+      };
+
+      await axios.put(`/api/products/${editingProduct.id}`, productData);
+
+      // Update local state
+      setProducts(products.map(p =>
+        p.id === editingProduct.id
+          ? { ...p, ...productData, id: editingProduct.id }
+          : p
+      ));
+
+      setShowEditForm(false);
+      setEditingProduct(null);
+      alert('Product updated successfully!');
+    } catch (error) {
+      console.error('Error updating product:', error);
+      alert('Failed to update product. Please try again.');
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -384,48 +467,6 @@ export default function Productpage() {
                       whileHover={{ scale: 1.03 }}
                       whileTap={{ scale: 1.01 }}
                     >
-                      {/* Like Button */}
-                      <button
-                        onClick={(e) => toggleLike(product.id, e)}
-                        className={`absolute top-2 right-2 z-10 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 ${
-                          likedProducts.includes(product.id)
-                            ? 'bg-red-500 text-white shadow-lg'
-                            : 'bg-white/80 text-gray-600 hover:bg-white shadow-md'
-                        }`}
-                      >
-                        {likedProducts.includes(product.id) ? '❤️' : '🤍'}
-                      </button>
-
-                      {/* Add to Promotional Button - Only for admin */}
-                      {currentUser && currentUser.uid === "cJ2MGVYgnZZVyI6Xy54XrIxj1YO2" && (
-                        <button
-                          onClick={(e) => addToPromotional(product, e)}
-                          className={`absolute top-2 left-2 z-10 w-8 h-8 rounded-full text-white flex items-center justify-center transition-all duration-300 shadow-md ${
-                            promotionalProducts.some(p => p.title === product.name)
-                              ? 'bg-red-500 hover:bg-red-600'
-                              : 'bg-blue-500 hover:bg-blue-600'
-                          }`}
-                          title={promotionalProducts.some(p => p.title === product.name) ? "Already in Promotional Banner" : "Add to Promotional Banner"}
-                        >
-                          📢
-                        </button>
-                      )}
-
-                      {/* Add to Best Sellers Button - Only for admin */}
-                      {currentUser && currentUser.uid === "cJ2MGVYgnZZVyI6Xy54XrIxj1YO2" && (
-                        <button
-                          onClick={(e) => addToBestSellers(product, e)}
-                          className={`absolute top-12 left-2 z-10 w-8 h-8 rounded-full text-white flex items-center justify-center transition-all duration-300 shadow-md ${
-                            bestSellerProducts.some(p => p.title === product.name)
-                              ? 'bg-red-500 hover:bg-red-600'
-                              : 'bg-green-500 hover:bg-green-600'
-                          }`}
-                          title={bestSellerProducts.some(p => p.title === product.name) ? "Already in Best Sellers" : "Add to Best Sellers"}
-                        >
-                          ⭐
-                        </button>
-                      )}
-
                       <div className="relative w-full h-28 sm:h-52 flex items-center justify-center">
                         <Image
                           src={product.images[0]}
@@ -433,8 +474,80 @@ export default function Productpage() {
                           width={400}
                           height={400}
                           className="w-full h-full object-contain"
+                          priority={false}
+                          loading="lazy"
+                          sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
+                          placeholder="blur"
+                          blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+IRjWjBqO6O2mhP//Z"
                         />
+
+                        {/* Like Button - Top Right Corner */}
+                        <button
+                          onClick={(e) => toggleLike(product.id, e)}
+                          className={`absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 ${
+                            likedProducts.includes(product.id)
+                              ? 'bg-red-500 text-white shadow-lg'
+                              : 'bg-white/80 text-gray-600 hover:bg-white shadow-md'
+                          }`}
+                        >
+                          {likedProducts.includes(product.id) ? '❤️' : '🤍'}
+                        </button>
                       </div>
+
+                      {/* Admin Buttons - Below Image */}
+                      {currentUser && currentUser.uid === "cJ2MGVYgnZZVyI6Xy54XrIxj1YO2" && (
+                        <div className="flex justify-center gap-1 mt-2">
+                          {/* Add to Promotional Button */}
+                          <button
+                            onClick={(e) => addToPromotional(product, e)}
+                            className={`w-8 h-8 rounded-full text-white flex items-center justify-center transition-all duration-300 shadow-md ${
+                              promotionalProducts.some(p => p.title === product.name)
+                                ? 'bg-red-500 hover:bg-red-600'
+                                : 'bg-blue-500 hover:bg-blue-600'
+                            }`}
+                            title={promotionalProducts.some(p => p.title === product.name) ? "Already in Promotional Banner" : "Add to Promotional Banner"}
+                          >
+                            📢
+                          </button>
+
+                          {/* Add to Best Sellers Button */}
+                          <button
+                            onClick={(e) => addToBestSellers(product, e)}
+                            className={`w-8 h-8 rounded-full text-white flex items-center justify-center transition-all duration-300 shadow-md ${
+                              bestSellerProducts.some(p => p.title === product.name)
+                                ? 'bg-red-500 hover:bg-red-600'
+                                : 'bg-green-500 hover:bg-green-600'
+                            }`}
+                            title={bestSellerProducts.some(p => p.title === product.name) ? "Already in Best Sellers" : "Add to Best Sellers"}
+                          >
+                            ⭐
+                          </button>
+
+                          {/* Edit Button */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEdit(product);
+                            }}
+                            className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center transition-all duration-300 shadow-md hover:bg-blue-600"
+                            title="Edit Product"
+                          >
+                            ✏️
+                          </button>
+
+                          {/* Delete Button */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDelete(product.id);
+                            }}
+                            className="w-8 h-8 rounded-full bg-red-500 text-white flex items-center justify-center transition-all duration-300 shadow-md hover:bg-red-600"
+                            title="Delete Product"
+                          >
+                            🗑️
+                          </button>
+                        </div>
+                      )}
 
                       <h3 className="mt-2 text-sm sm:text-lg font-semibold text-gray-800 text-center truncate">
                         {product.name}
@@ -641,12 +754,15 @@ export default function Productpage() {
                       required
                     >
                       <option value="">Select a category</option>
-                      <option value="Macramé">Macramé</option>
-                      <option value="Beaded Art">Beaded Art</option>
-                      <option value="Keychains">Keychains</option>
-                      <option value="Bags & Pouches">Bags & Pouches</option>
-                      <option value="Wall Hangings">Wall Hangings</option>
-                      <option value="Jewelry">Jewelry</option>
+                      <option value="Chocolate Cakes">Chocolate Cakes</option>
+                      <option value="Vanilla Cakes">Vanilla Cakes</option>
+                      <option value="Fruit Cakes">Fruit Cakes</option>
+                      <option value="Cupcakes">Cupcakes</option>
+                      <option value="Cookies">Cookies</option>
+                      <option value="Pastries">Pastries</option>
+                      <option value="Bread">Bread</option>
+                      <option value="Desserts">Desserts</option>
+                      <option value="Custom Orders">Custom Orders</option>
                     </select>
                   </div>
 
@@ -803,7 +919,229 @@ export default function Productpage() {
           </motion.div>
         )}
       </AnimatePresence>
-      </div>
+
+      {/* Edit Product Form Modal */}
+      <AnimatePresence>
+        {showEditForm && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="relative bg-white/80 backdrop-blur-lg border border-white/30 shadow-2xl rounded-3xl max-w-2xl w-full p-6 sm:p-8 mx-4 overflow-y-auto max-h-[90vh]"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", damping: 20, stiffness: 120 }}
+            >
+              {/* Close button */}
+              <button
+                onClick={() => setShowEditForm(false)}
+                className="absolute top-3 right-4 z-50 text-gray-500 hover:text-pink-600 text-3xl sm:text-4xl font-bold bg-white/70 rounded-full w-10 h-10 flex items-center justify-center shadow-md hover:shadow-lg transition-all"
+              >
+                ×
+              </button>
+
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-800 mb-6 text-center">
+                Edit Product
+              </h2>
+
+              <form onSubmit={handleEditSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                    <select
+                      value={formData.category}
+                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all"
+                      required
+                    >
+                      <option value="">Select a category</option>
+                      <option value="Chocolate Cakes">Chocolate Cakes</option>
+                      <option value="Vanilla Cakes">Vanilla Cakes</option>
+                      <option value="Fruit Cakes">Fruit Cakes</option>
+                      <option value="Cupcakes">Cupcakes</option>
+                      <option value="Cookies">Cookies</option>
+                      <option value="Pastries">Pastries</option>
+                      <option value="Bread">Bread</option>
+                      <option value="Desserts">Desserts</option>
+                      <option value="Custom Orders">Custom Orders</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                    <input
+                      type="text"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all"
+                      placeholder="Product name"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Price (₹)</label>
+                  <input
+                    type="number"
+                    value={formData.price}
+                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all"
+                    placeholder="299"
+                    min="0"
+                    step="0.01"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Product Images</label>
+                  <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-pink-400 transition-colors">
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={(e) => {
+                        const newFiles = Array.from(e.target.files || []);
+                        setFormData({ ...formData, images: [...formData.images, ...newFiles] });
+                      }}
+                      className="hidden"
+                      id="edit-image-upload"
+                      name="images"
+                    />
+                    <label htmlFor="edit-image-upload" className="cursor-pointer">
+                      <div className="text-gray-500 mb-2">
+                        <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                          <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      </div>
+                      <p className="text-sm text-gray-600">Click to upload additional images (optional)</p>
+                      <p className="text-xs text-gray-500 mt-1">PNG, JPG, GIF up to 10MB each</p>
+                    </label>
+                  </div>
+                  {formData.images.length > 0 && (
+                    <div className="mt-4">
+                      <p className="text-sm text-gray-600 mb-2">Selected images: {formData.images.length}</p>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        {formData.images.map((file, index) => (
+                          <div key={index} className="relative">
+                            <Image
+                              src={URL.createObjectURL(file)}
+                              alt={`Preview ${index + 1}`}
+                              width={100}
+                              height={80}
+                              className="w-full h-20 object-cover rounded-lg border"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newImages = formData.images.filter((_, i) => i !== index);
+                                setFormData({ ...formData, images: newImages });
+                              }}
+                              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {editingProduct && editingProduct.images.length > 0 && (
+                    <div className="mt-4">
+                      <p className="text-sm text-gray-600 mb-2">Current images:</p>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        {editingProduct.images.map((img, index) => (
+                          <div key={index} className="relative">
+                            <Image
+                              src={img}
+                              alt={`Current ${index + 1}`}
+                              width={100}
+                              height={80}
+                              className="w-full h-20 object-cover rounded-lg border"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                  <textarea
+                    value={formData.desc}
+                    onChange={(e) => setFormData({ ...formData, desc: e.target.value })}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all"
+                    rows={4}
+                    placeholder="Describe your beautiful creation..."
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Material</label>
+                    <input
+                      type="text"
+                      value={formData.material}
+                      onChange={(e) => setFormData({ ...formData, material: e.target.value })}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all"
+                      placeholder="e.g., Cotton thread"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Size</label>
+                    <input
+                      type="text"
+                      value={formData.size}
+                      onChange={(e) => setFormData({ ...formData, size: e.target.value })}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all"
+                      placeholder="e.g., 10cm x 6cm"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Care Instructions</label>
+                    <input
+                      type="text"
+                      value={formData.care}
+                      onChange={(e) => setFormData({ ...formData, care: e.target.value })}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all"
+                      placeholder="e.g., Wipe gently"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="flex gap-4 pt-4">
+                  <button
+                    type="submit"
+                    className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-8 py-4 rounded-full hover:scale-105 hover:shadow-lg transition-all duration-300 flex-1 font-medium text-lg"
+                  >
+                    ✏️ Update Product
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowEditForm(false)}
+                    className="border-2 border-pink-400 text-pink-600 px-8 py-4 rounded-full hover:bg-pink-50 hover:scale-105 transition-all duration-300 flex-1 font-medium text-lg"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
-  );
+  </div>
+);
 }

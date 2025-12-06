@@ -3,27 +3,25 @@ import Footerpage from "@/components/Footerpage";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy – Vaishi",
-  description:
-    "Read Vaishi’s Privacy Policy to understand how we protect your personal information and ensure a safe shopping experience.",
+  title: "Privacy Policy - Meet Bakery",
+  description: "Read Meet Bakery's Privacy Policy to understand how we protect your personal information and ensure a safe online ordering experience.",
   keywords: [
-    "Vaishi privacy policy",
+    "Meet Bakery privacy policy",
     "data protection",
     "user privacy",
-    "secure shopping",
-    "Vaishi store",
+    "secure bakery shopping",
+    "cake orders privacy",
   ],
   openGraph: {
-    title: "Privacy Policy – Vaishi",
-    description: "Learn how Vaishi handles your data with transparency and care.",
-    images: ["/Mylogo.png"],
+    title: "Privacy Policy - Meet Bakery",
+    description: "Learn how Meet Bakery handles your data with transparency and care for secure cake and cupcake orders.",
+    images: ["/bakerylogo.png"],
   },
   twitter: {
     card: "summary",
-    title: "Privacy Policy – Vaishi",
-    description:
-      "Understand Vaishi’s commitment to protecting your privacy and data.",
-    images: ["/Mylogo.png"],
+    title: "Privacy Policy - Meet Bakery",
+    description: "Understand Meet Bakery's commitment to protecting your privacy and data during online bakery purchases.",
+    images: ["/bakerylogo.png"],
   },
 };
 
@@ -110,7 +108,7 @@ export default function PrivacyPolicy() {
           </p>
 
           <div className="bg-pink-100 rounded-lg p-4 text-gray-700">
-            📧 <strong>Email:</strong> vaishnaviyadav25march@gmail.com
+            📧 <strong>Email:</strong> tehzuqureshi019@gmail.com
           </div>
         </div>
       </div>
