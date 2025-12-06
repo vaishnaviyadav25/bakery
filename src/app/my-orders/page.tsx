@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { auth } from "@/context/firebase";
 import { onAuthStateChanged, User } from "firebase/auth";
-import axios from "axios";
+import axios from "axios";  
 import ReviewModal from "@/components/ReviewModal";
 
 type Order = {
@@ -151,7 +151,8 @@ export default function MyOrdersPage() {
         </div>
 
 
-        {orders.length === 0 ? (
+       {(orders?.length ?? 0) === 0 ? (
+
           <div className="text-center py-20 bg-[#F6E6E6] rounded-2xl mx-6 md:mx-20 shadow-lg">
             <div className="text-6xl mb-4">📦</div>
             <h2 className="text-2xl font-bold text-[#7D5A5F] mb-2">No Orders Yet</h2>
@@ -166,7 +167,8 @@ export default function MyOrdersPage() {
 
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {orders.map((order) => (
+           {orders?.map((order) => (
+
               <div
                 key={order._id}
                 className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-pink-100"
@@ -199,7 +201,8 @@ export default function MyOrdersPage() {
                   <div className="pt-3 border-t border-gray-100">
                     <h4 className="text-sm font-medium text-gray-700 mb-2">Products:</h4>
                     <div className="space-y-2">
-                      {order.products.map((product, index) => (
+                     {order.products?.map((product, index) => (
+
                         <div key={index} className="flex justify-between text-sm">
                           <span className="text-gray-600">{product.name} (x{product.quantity})</span>
                           <span className="font-medium">₹{product.price * product.quantity}</span>
