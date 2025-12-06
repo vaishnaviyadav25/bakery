@@ -63,10 +63,11 @@ export default function OrderPage() {
     }
   }, [urlProduct, urlPrice]);
 
- const itemsToShow: CartItem[] =
-  urlProduct && cartItems?.length === 1
+const itemsToShow: CartItem[] = 
+  (urlProduct && (cartItems?.length || 0) === 1)
     ? [{ ...cartItems[0], quantity: Math.max(1, singleQuantity) }]
-    : cartItems || [];
+    : (cartItems || []);
+
 
 
   const totalQuantity = itemsToShow.reduce((sum, item) => sum + item.quantity, 0);
