@@ -265,11 +265,13 @@ export default function AdminOrdersPage() {
               📦 Admin Orders Dashboard
             </h1>
             <div className="text-sm text-gray-600">
-              Total Orders: {orders.length}
+             Total Orders: {orders?.length ?? 0}
+
             </div>
           </div>
 
-          {orders.length === 0 ? (
+         {(orders?.length ?? 0) === 0 ? (
+
             <div className="text-center py-12">
               <div className="text-6xl mb-4">📦</div>
               <h2 className="text-xl font-semibold text-gray-600 mb-2">No orders yet</h2>
@@ -277,7 +279,8 @@ export default function AdminOrdersPage() {
             </div>
           ) : (
             <div className="space-y-6">
-              {orders.map((order) => (
+              {orders?.map((order) => (
+
                 <motion.div
                   key={order._id}
                   className="border border-pink-200 rounded-xl p-6 bg-pink-50/50 hover:shadow-md transition-shadow"
