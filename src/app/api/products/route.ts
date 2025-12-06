@@ -1,32 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { MongoClient } from 'mongodb';
-
-const uri = process.env.MONGODB_URI || 'mongodb+srv://your-connection-string/meetbakery?retryWrites=true&w=majority';
-const client = new MongoClient(uri);
+import clientPromise from '@/lib/mongodb';
 
 export async function GET() {
   try {
-    await client.connect();
-    const database = client.db('meetbakery');
-    const collection = database.collection('products');
+    const client = await clientPromise;
+    const db = client.db("meetbakery");
+    const collection = db.collection("products");
 
-    const products = await collection.find({}).toArray();
-
-    return NextResponse.json(products);
+    const data = await collection.find({}).toArray();
+    return NextResponse.json(data);
   } catch (error) {
     console.error('Error fetching products:', error);
     return NextResponse.json({ error: 'Failed to fetch products' }, { status: 500 });
-  } finally {
-    await client.close();
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    await client.connect();
-    const database = client.db('meetbakery');
-    const collection = database.collection('products');
+    const client = await clientPromise;
+    const db = client.db("meetbakery");
+    const collection = db.collection("products");
 
     const result = await collection.insertOne(body);
 
@@ -34,8 +28,6 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error adding product:', error);
     return NextResponse.json({ error: 'Failed to add product' }, { status: 500 });
-  } finally {
-    await client.close();
   }
 }
 
@@ -44,9 +36,9 @@ export async function PUT(request: NextRequest) {
     const body = await request.json();
     const { id, ...updateData } = body;
 
-    await client.connect();
-    const database = client.db('meetbakery');
-    const collection = database.collection('products');
+    const client = await clientPromise;
+    const db = client.db("meetbakery");
+    const collection = db.collection("products");
 
     const result = await collection.updateOne(
       { id: id },
@@ -61,8 +53,6 @@ export async function PUT(request: NextRequest) {
   } catch (error) {
     console.error('Error updating product:', error);
     return NextResponse.json({ error: 'Failed to update product' }, { status: 500 });
-  } finally {
-    await client.close();
   }
 }
 
@@ -75,9 +65,9 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Product ID is required' }, { status: 400 });
     }
 
-    await client.connect();
-    const database = client.db('meetbakery');
-    const collection = database.collection('products');
+    const client = await clientPromise;
+    const db = client.db("meetbakery");
+    const collection = db.collection("products");
 
     const result = await collection.deleteOne({ id: parseInt(id) });
 
@@ -89,7 +79,5 @@ export async function DELETE(request: NextRequest) {
   } catch (error) {
     console.error('Error deleting product:', error);
     return NextResponse.json({ error: 'Failed to delete product' }, { status: 500 });
-  } finally {
-    await client.close();
   }
 }
