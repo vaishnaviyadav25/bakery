@@ -424,9 +424,11 @@ export default function HomePage() {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="relative w-full max-w-sm sm:max-w-sm md:max-w-md h-80 sm:h-96 md:h-96 rounded-2xl overflow-hidden shadow-2xl"
         >
-          <img
+          <Image
             src="/image.jpeg"
             alt="About Teju"
+            width={400}
+            height={400}
             className="w-full h-full object-cover"
           />
         </motion.div>
