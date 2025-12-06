@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 
 export async function POST(request: NextRequest) {
+  // Prevent execution during build time
+  if (!process.env.MONGODB_URI) {
+    return NextResponse.json({ error: 'Database not configured' }, { status: 500 });
+  }
+
   try {
     const orderData = await request.json();
 
@@ -30,6 +35,11 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
+  // Prevent execution during build time
+  if (!process.env.MONGODB_URI) {
+    return NextResponse.json({ orders: [] }, { status: 500 });
+  }
+
   try {
     const { searchParams } = new URL(request.url);
     const email = searchParams.get('email');

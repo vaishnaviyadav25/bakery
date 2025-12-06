@@ -24,6 +24,11 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
+  // Prevent execution during build time
+  if (!process.env.MONGODB_URI) {
+    return NextResponse.json({ error: 'Database not configured' }, { status: 500 });
+  }
+
   try {
     const body = await request.json();
     const client = await clientPromise;
