@@ -1,12 +1,9 @@
 import { NextResponse } from 'next/server';
-import { MongoClient } from 'mongodb';
-
-const uri = process.env.MONGODB_URI || 'mongodb+srv://your-connection-string/meetbakery?retryWrites=true&w=majority';
-const client = new MongoClient(uri);
+import clientPromise from '@/lib/mongodb';
 
 export async function GET() {
   try {
-    await client.connect();
+    const client = await clientPromise;
     const database = client.db('meetbakery');
     const collection = database.collection('orders');
 
@@ -16,7 +13,5 @@ export async function GET() {
   } catch (error) {
     console.error('Error fetching orders:', error);
     return NextResponse.json({ orders: [] }, { status: 500 });
-  } finally {
-    await client.close();
   }
 }

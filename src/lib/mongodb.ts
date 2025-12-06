@@ -1,42 +1,41 @@
 import { MongoClient } from "mongodb";
 
-if (!process.env.MONGODB_URI) throw new Error("MONGODB_URI missing");
+if (!process.env.MONGODB_URI) {
+  throw new Error("Please define the MONGODB_URI environment variable in .env.local");
+}
+
+const uri = process.env.MONGODB_URI;
+const options = {
+  maxPoolSize: 10, // Maintain up to 10 socket connections
+  serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
+  socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
+  bufferMaxEntries: 0, // Disable mongoose buffering
+  bufferCommands: false, // Disable mongoose buffering
+  tls: true,
+  tlsAllowInvalidCertificates: process.env.NODE_ENV === "development",
+};
 
 let client: MongoClient;
 let clientPromise: Promise<MongoClient>;
 
-const options = {
-  serverSelectionTimeoutMS: 5000,
-  socketTimeoutMS: 45000,
-  tls: true,
-  tlsAllowInvalidCertificates: true, // dev only
-};
-
-if (process.env.NODE_ENV === "development") {
-  if (!(global as any)._mongoClientPromise) {
-    client = new MongoClient(process.env.MONGODB_URI, options);
-    (global as any)._mongoClientPromise = client.connect()
-      .then((client) => {
-        console.log("✅ MongoDB connected (dev)");
-        return client;
-      })
-      .catch((err) => {
-        console.error("❌ MongoDB connection failed (dev):", err);
-        throw err;
-      });
-  }
-  clientPromise = (global as any)._mongoClientPromise;
-} else {
-  client = new MongoClient(process.env.MONGODB_URI, options);
-  clientPromise = client.connect()
-    .then((client) => {
-      console.log("✅ MongoDB connected (prod)");
-      return client;
-    })
-    .catch((err) => {
-      console.error("❌ MongoDB connection failed (prod):", err);
-      throw err;
-    });
+declare global {
+  var _mongoClientPromise: Promise<MongoClient> | undefined;
 }
 
+if (process.env.NODE_ENV === "development") {
+  // In development mode, use a global variable so that the value
+  // is preserved across module reloads caused by HMR (Hot Module Replacement).
+  if (!global._mongoClientPromise) {
+    client = new MongoClient(uri, options);
+    global._mongoClientPromise = client.connect();
+  }
+  clientPromise = global._mongoClientPromise;
+} else {
+  // In production mode, it's best to not use a global variable.
+  client = new MongoClient(uri, options);
+  clientPromise = client.connect();
+}
+
+// Export a module-scoped MongoClient promise. By doing this in a
+// separate module, the client can be shared across functions.
 export default clientPromise;
