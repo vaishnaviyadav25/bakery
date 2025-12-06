@@ -63,10 +63,11 @@ export default function OrderPage() {
     }
   }, [urlProduct, urlPrice]);
 
-  const itemsToShow: CartItem[] =
-    urlProduct && cartItems.length === 1
-      ? [{ ...cartItems[0], quantity: Math.max(1, singleQuantity) }]
-      : cartItems;
+ const itemsToShow: CartItem[] =
+  urlProduct && cartItems?.length === 1
+    ? [{ ...cartItems[0], quantity: Math.max(1, singleQuantity) }]
+    : cartItems || [];
+
 
   const totalQuantity = itemsToShow.reduce((sum, item) => sum + item.quantity, 0);
   const grandTotal = itemsToShow.reduce(
@@ -113,10 +114,11 @@ export default function OrderPage() {
     e.preventDefault();
     setStatus("loading");
 
-    if (itemsToShow.length === 0) {
-      setStatus("error");
-      return;
-    }
+   if (!itemsToShow?.length) {
+  setStatus("error");
+  return;
+}
+
 
     const form = e.currentTarget;
     const formData = new FormData(form);
@@ -221,9 +223,9 @@ export default function OrderPage() {
           Place Your Order 🛍️
         </h1>
 
-        {itemsToShow.length === 0 ? (
-          <p className="text-center text-gray-600 mb-4">Your cart is empty 🛒</p>
-        ) : (
+       {!itemsToShow?.length ? (
+  <p className="text-center text-gray-600 mb-4">Your cart is empty 🛒</p>
+): (
           <>
             <div className="mb-4 border border-[#EBBEC3] rounded-lg p-4 bg-[#EBBEC3]/20">
               <h2 className="text-lg font-semibold text-[#f97316] mb-3">
@@ -256,7 +258,8 @@ export default function OrderPage() {
 
                       {/* Quantity & subtotal */}
                       <div className="flex items-center gap-4 text-center">
-                        {urlProduct && cartItems.length === 1 ? (
+                       {urlProduct && cartItems?.length === 1 ? (
+
                           <div className="flex items-center gap-1">
                             <label className="text-sm text-gray-600">Qty</label>
                             <input
