@@ -1,62 +1,66 @@
-import { NextRequest, NextResponse } from 'next/server';
-import clientPromise from '@/lib/mongodb';
+import { NextRequest, NextResponse } from "next/server";
+import clientPromise from "@/lib/mongodb";
 
+// POST a new order
 export async function POST(request: NextRequest) {
-  // Prevent execution during build time
-  if (!process.env.MONGODB_URI) {
-    return NextResponse.json({ error: 'Database not configured' }, { status: 500 });
-  }
-
   try {
     const orderData = await request.json();
 
-    const client = await clientPromise;
-    const database = client.db('meetbakery');
-    const collection = database.collection('orders');
-
-    // Add default fields
-    orderData.orderDate = orderData.orderDate || new Date().toISOString();
-    orderData.orderStatus = orderData.orderStatus || 'pending';
-    orderData.payment.status = orderData.payment.status || 'pending';
-
-    // Ensure deliveryDate is set if not provided (optional field)
-    if (!orderData.deliveryDate && orderData.orderStatus === 'delivered') {
-      // Set delivery date to current date if order is marked as delivered
-      orderData.deliveryDate = new Date().toISOString();
+    // Validate required fields
+    if (!orderData || !orderData.customer || !orderData.items) {
+      return NextResponse.json({ error: "Invalid order data" }, { status: 400 });
     }
 
-    const result = await collection.insertOne(orderData);
+    const client = await clientPromise;
+    const db = client.db("meetbakery");
+    const collection = db.collection("orders");
+
+    // Set default values
+    const now = new Date().toISOString();
+    const newOrder = {
+      ...orderData,
+      orderDate: orderData.orderDate || now,
+      orderStatus: orderData.orderStatus || "pending",
+      payment: {
+        status: orderData.payment?.status || "pending",
+        ...orderData.payment,
+      },
+      deliveryDate:
+        orderData.deliveryDate ||
+        (orderData.orderStatus === "delivered" ? now : null),
+    };
+
+    const result = await collection.insertOne(newOrder);
 
     return NextResponse.json({ success: true, orderId: result.insertedId });
   } catch (error) {
-    console.error('Error creating order:', error);
-    return NextResponse.json({ error: 'Failed to create order' }, { status: 500 });
+    console.error("Error creating order:", error);
+    return NextResponse.json({ error: "Failed to create order" }, { status: 500 });
   }
 }
 
+// GET orders by customer email
 export async function GET(request: NextRequest) {
-  // Prevent execution during build time
-  if (!process.env.MONGODB_URI) {
-    return NextResponse.json({ orders: [] }, { status: 500 });
-  }
-
   try {
     const { searchParams } = new URL(request.url);
-    const email = searchParams.get('email');
+    const email = searchParams.get("email");
 
     if (!email) {
       return NextResponse.json({ orders: [] }, { status: 400 });
     }
 
     const client = await clientPromise;
-    const database = client.db('meetbakery');
-    const collection = database.collection('orders');
+    const db = client.db("meetbakery");
+    const collection = db.collection("orders");
 
-    const orders = await collection.find({ 'customer.email': email }).sort({ orderDate: -1 }).toArray();
+    const orders = await collection
+      .find({ "customer.email": email })
+      .sort({ orderDate: -1 })
+      .toArray();
 
     return NextResponse.json({ orders });
   } catch (error) {
-    console.error('Error fetching orders:', error);
+    console.error("Error fetching orders:", error);
     return NextResponse.json({ orders: [] }, { status: 500 });
   }
 }

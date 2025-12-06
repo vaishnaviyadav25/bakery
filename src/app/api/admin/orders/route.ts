@@ -2,15 +2,10 @@ import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 
 export async function GET() {
-  // Prevent execution during build time
-  if (process.env.NODE_ENV === 'production' && !process.env.MONGODB_URI) {
-    return NextResponse.json({ orders: [] }, { status: 500 });
-  }
-
   try {
     const client = await clientPromise;
-    const database = client.db('meetbakery');
-    const collection = database.collection('orders');
+    const db = client.db('meetbakery');
+    const collection = db.collection('orders');
 
     const orders = await collection.find({}).sort({ orderDate: -1 }).toArray();
 

@@ -1,38 +1,47 @@
-import { NextRequest, NextResponse } from 'next/server';
-import clientPromise from '@/lib/mongodb';
+import { NextRequest, NextResponse } from "next/server";
+import clientPromise from "@/lib/mongodb";
 
+// GET all best-sellers
 export async function GET() {
   try {
     const client = await clientPromise;
     const db = client.db("meetbakery");
     const collection = db.collection("best-sellers");
 
-    const data = await collection.find({}).toArray();
-    return NextResponse.json(data);
+    const bestSellers = await collection.find({}).sort({ _id: -1 }).toArray();
 
+    return NextResponse.json({ bestSellers });
   } catch (error) {
-    console.error("Error:", error);
-    return NextResponse.json({ error: "Failed" }, { status: 500 });
+    console.error("Error fetching best-sellers:", error);
+    return NextResponse.json({ bestSellers: [], error: "Failed to fetch best-sellers" }, { status: 500 });
   }
 }
 
+// POST a new best-seller
 export async function POST(request: NextRequest) {
-  // Prevent execution during build time
-  if (!process.env.MONGODB_URI) {
-    return NextResponse.json({ error: 'Database not configured' }, { status: 500 });
-  }
-
   try {
     const body = await request.json();
+
+    // Basic validation
+    if (!body || Object.keys(body).length === 0) {
+      return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+    }
+
     const client = await clientPromise;
     const db = client.db("meetbakery");
     const collection = db.collection("best-sellers");
 
-    const result = await collection.insertOne(body);
+    const result = await collection.insertOne({
+      ...body,
+      createdAt: new Date().toISOString(), // add timestamp
+    });
 
-    return NextResponse.json({ message: 'Best seller added successfully', id: result.insertedId });
+    return NextResponse.json({
+      message: "Best seller added successfully",
+      id: result.insertedId,
+    });
   } catch (error) {
-    console.error('Error adding best seller:', error);
-    return NextResponse.json({ error: 'Failed to add best seller' }, { status: 500 });
+    console.error("Error adding best-seller:", error);
+    return NextResponse.json({ error: "Failed to add best-seller" }, { status: 500 });
   }
 }
