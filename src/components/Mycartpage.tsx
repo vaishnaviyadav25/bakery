@@ -7,7 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 interface CartItem {
-  id: number;
+  id: string;
   name: string;
   price: number;
   quantity: number;
@@ -15,7 +15,7 @@ interface CartItem {
 }
 
 interface Product {
-  id: number;
+  id: string;
   category: string;
   name: string;
   price: number;
@@ -28,7 +28,7 @@ interface Product {
 
 const Mycartpage: React.FC = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [likedProducts, setLikedProducts] = useState<number[]>([]);
+  const [likedProducts, setLikedProducts] = useState<string[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -65,7 +65,7 @@ const Mycartpage: React.FC = () => {
   }, [cart, isLoaded]);
 
   // 🗑️ Remove item
-  const removeItem = (id: number) => {
+  const removeItem = (id: string) => {
     const updated = cart.filter((item) => item.id !== id);
     setCart(updated);
   };
@@ -77,7 +77,7 @@ const Mycartpage: React.FC = () => {
   };
 
   // ➕ Update quantity
-  const updateQuantity = (id: number, change: number) => {
+  const updateQuantity = (id: string, change: number) => {
     setCart((prev) =>
       prev.map((item) =>
         item.id === id

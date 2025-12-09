@@ -8,6 +8,9 @@ interface Product {
   price: number;
   category?: string;
   description?: string;
+  desc?: string;
+  images?: string[];
+  material?: string;
   createdAt?: Date;
 }
 

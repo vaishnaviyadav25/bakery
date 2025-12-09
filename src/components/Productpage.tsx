@@ -10,7 +10,8 @@ import { onAuthStateChanged, User } from "firebase/auth";
 import axios from "axios";
 
 interface Product {
-  id: number;
+  id: string;
+  _id: string;
   category: string;
   name: string;
   price: number;
@@ -63,7 +64,7 @@ export default function Productpage() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [loading, setLoading] = useState(true);
 
-  const [likedProducts, setLikedProducts] = useState<number[]>([]);
+  const [likedProducts, setLikedProducts] = useState<string[]>([]);
   const [promotionalProducts, setPromotionalProducts] = useState<PromotionalProduct[]>([]);
   const [bestSellerProducts, setBestSellerProducts] = useState<BestSellerProduct[]>([]);
   const [formData, setFormData] = useState({
@@ -127,7 +128,7 @@ export default function Productpage() {
     setLikedProducts(liked);
   }, []);
 
-  const toggleLike = (productId: number, e: React.MouseEvent) => {
+  const toggleLike = (productId: string, e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent triggering the product modal
     const updatedLiked = likedProducts.includes(productId)
       ? likedProducts.filter((id) => id !== productId)
@@ -274,12 +275,12 @@ export default function Productpage() {
     setShowEditForm(true);
   };
 
-  const handleDelete = async (productId: number) => {
+  const handleDelete = async (product: Product) => {
     if (!confirm('Are you sure you want to delete this product?')) return;
 
     try {
-      await axios.delete(`/api/products/${productId}`);
-      setProducts(products.filter(p => p.id !== productId));
+      await axios.delete(`/api/products/${product._id}`);
+      setProducts(products.filter(p => p._id !== product._id));
       alert('Product deleted successfully!');
     } catch (error) {
       console.error('Error deleting product:', error);
@@ -320,7 +321,7 @@ export default function Productpage() {
         material: formData.material,
       };
 
-      await axios.put(`/api/products/${editingProduct.id}`, productData);
+      await axios.put(`/api/products/${editingProduct._id}`, productData);
 
       // Update local state
       setProducts(products.map(p =>
@@ -509,7 +510,7 @@ export default function Productpage() {
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleDelete(product.id);
+                              handleDelete(product);
                             }}
                             className="w-8 h-8 rounded-full bg-red-500 text-white flex items-center justify-center transition-all duration-300 shadow-md hover:bg-red-600"
                             title="Delete Product"

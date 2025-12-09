@@ -11,6 +11,7 @@ interface Product {
   desc?: string;
   image?: string;
   images?: string[];
+  material?: string;
   createdAt?: Date;
 }
 
@@ -24,8 +25,14 @@ export async function GET() {
     const products = await collection.find({}).sort({ createdAt: -1 }).toArray();
 
     const serialized = products.map((p) => ({
-      ...p,
-      _id: p._id.toString(),
+      id: parseInt(p._id.toString().slice(-6), 16) || Math.floor(Math.random() * 10000), // Generate a numeric id from _id
+      _id: p._id.toString(), // Keep original _id for operations
+      name: p.name,
+      price: p.price,
+      category: p.category || "",
+      desc: p.description || p.desc || "",
+      images: p.images || (p.image ? [p.image] : []),
+      material: p.material || "",
       createdAt: p.createdAt?.toISOString(),
     }));
 
@@ -59,6 +66,7 @@ export async function POST(req: NextRequest) {
       category: body.category || "",
       description: body.description || body.desc || "",
       images: body.images || (body.image ? [body.image] : []),
+      material: body.material || "",
       createdAt: new Date(),
     };
 
