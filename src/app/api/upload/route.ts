@@ -1,9 +1,6 @@
-// pages/api/upload.ts
-import type { NextApiRequest, NextApiResponse } from "next";
+import { NextRequest, NextResponse } from "next/server";
 import formidable, { File } from "formidable";
 import { v2 as cloudinary } from "cloudinary";
-
-export const config = { api: { bodyParser: false } };
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -11,35 +8,50 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-interface UploadResponse {
-  imageUrls: string[];
-}
+export async function POST(req: NextRequest) {
+  // Wrap formidable in a promise
+  const data = await new Promise<{ files: File[]; error?: any }>((resolve) => {
+    const form = new formidable.IncomingForm({
+      keepExtensions: true,
+      maxFileSize: 10 * 1024 * 1024,
+    });
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<UploadResponse | { message: string; error?: string }>
-) {
-  if (req.method !== "POST") return res.status(405).json({ message: "Method not allowed" });
-
-  const form = new formidable.IncomingForm({ keepExtensions: true, maxFileSize: 10 * 1024 * 1024 });
-
-  form.parse(req, async (err, fields, files) => {
-    if (err) return res.status(500).json({ message: "Error parsing form", error: err.message });
-
-    const uploadedFiles = files.images as File[] | File;
-    if (!uploadedFiles) return res.status(400).json({ message: "No files uploaded" });
-
-    const fileArray = Array.isArray(uploadedFiles) ? uploadedFiles : [uploadedFiles];
-    const imageUrls: string[] = [];
-
-    try {
-      for (const file of fileArray) {
-        const result = await cloudinary.uploader.upload(file.filepath, { folder: "products" });
-        imageUrls.push(result.secure_url);
+    form.parse(req as any, (err, fields, files) => {
+      if (err) resolve({ files: [], error: err });
+      else {
+        const uploadedFiles = files.images
+          ? Array.isArray(files.images)
+            ? files.images
+            : [files.images]
+          : [];
+        resolve({ files: uploadedFiles });
       }
-      return res.status(200).json({ imageUrls });
-    } catch (uploadError) {
-      return res.status(500).json({ message: "Error uploading to Cloudinary", error: (uploadError as Error).message });
-    }
+    });
   });
+
+  if (data.error) {
+    return NextResponse.json(
+      { message: "Form parse error", error: data.error.message },
+      { status: 500 }
+    );
+  }
+
+  if (data.files.length === 0) {
+    return NextResponse.json({ message: "No files uploaded" }, { status: 400 });
+  }
+
+  try {
+    const imageUrls: string[] = [];
+    for (const file of data.files) {
+      const result = await cloudinary.uploader.upload(file.filepath, { folder: "products" });
+      imageUrls.push(result.secure_url);
+    }
+
+    return NextResponse.json({ imageUrls });
+  } catch (err: any) {
+    return NextResponse.json(
+      { message: "Cloudinary upload failed", error: err.message },
+      { status: 500 }
+    );
+  }
 }
