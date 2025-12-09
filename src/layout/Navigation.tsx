@@ -86,7 +86,7 @@ const navLinkClasses = "flex items-center gap-2 p-3 rounded-full border-2 border
           </div>
 
           {/* Admin Orders - Only for admin user */}
-          {currentUser?.uid === "cJ2MGVYgnZZVyI6Xy54XrIxj1YO2" && (
+          {(currentUser?.uid === "cJ2MGVYgnZZVyI6Xy54XrIxj1YO2" || currentUser?.uid === "H2oiDqPTiOcTrl4qIHVJ1523xNr2") && (
             <div className="flex flex-col items-center">
               <Link href="/admin/orders" className={navLinkClasses}>
                 <ClipboardList size={18} /> Orders
@@ -166,7 +166,7 @@ const navLinkClasses = "flex items-center gap-2 p-3 rounded-full border-2 border
           </div>
 
           {/* Admin Orders */}
-          {currentUser?.uid === "cJ2MGVYgnZZVyI6Xy54XrIxj1YO2" && (
+         {(currentUser?.uid === "cJ2MGVYgnZZVyI6Xy54XrIxj1YO2" || currentUser?.uid === "H2oiDqPTiOcTrl4qIHVJ1523xNr2") && (
             <div className="flex flex-col items-start">
               <Link href="/admin/orders" onClick={() => setMenuOpen(false)} className={navLinkClasses + " w-full"}>
                 <ClipboardList size={18} /> Orders

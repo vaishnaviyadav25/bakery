@@ -11,14 +11,13 @@ const firebaseConfig = {
   appId: "1:942958259544:web:cfdcd99b53ce7a7207892d",
   measurementId: "G-3D0HZ0DJ7C"
 };
-
+  
 // Initialize Firebase Admin if not already initialized
 if (!getApps().length) {
   initializeApp({
     credential: cert({
       projectId: firebaseConfig.projectId,
       clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
     }),
     storageBucket: firebaseConfig.storageBucket,
   });
@@ -28,6 +27,14 @@ const bucket = getStorage().bucket();
 
 export async function POST(request: NextRequest) {
   try {
+    // Check UID from header
+    const uid = request.headers.get('x-user-uid');
+    const allowedUIDs = ["H2oiDqPTiOcTrl4qIHVJ1523xNr2", "cJ2MGVYgnZZVyI6Xy54XrIxj1YO2"];
+
+    if (!uid || !allowedUIDs.includes(uid)) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
     const data = await request.formData();
     const files = data.getAll('images') as File[];
 

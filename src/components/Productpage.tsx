@@ -411,8 +411,7 @@ export default function Productpage() {
           >
             Discover Beautiful Creations That Inspire 🌸
           </motion.h1>
-
-          {currentUser && currentUser.uid === "cJ2MGVYgnZZVyI6Xy54XrIxj1YO2" && (
+{(currentUser?.uid === "cJ2MGVYgnZZVyI6Xy54XrIxj1YO2" || currentUser?.uid === "H2oiDqPTiOcTrl4qIHVJ1523xNr2") &&(
             <div className="text-center mb-8">
               <button
                 onClick={() => setShowAddForm(true)}
@@ -480,7 +479,7 @@ export default function Productpage() {
                       </div>
 
                       {/* Admin Buttons - Below Image */}
-                      {currentUser && currentUser.uid === "cJ2MGVYgnZZVyI6Xy54XrIxj1YO2" && (
+                    {(currentUser?.uid === "cJ2MGVYgnZZVyI6Xy54XrIxj1YO2" || currentUser?.uid === "H2oiDqPTiOcTrl4qIHVJ1523xNr2") && (
                         <div className="flex justify-center gap-1 mt-2">
                           {/* Add/Remove from Promotional Button */}
                           <button

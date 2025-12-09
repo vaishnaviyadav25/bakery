@@ -50,7 +50,7 @@ export default function AdminOrdersPage() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
-      if (!user || user.uid !== "cJ2MGVYgnZZVyI6Xy54XrIxj1YO2") {
+     if (!user || (user.uid !== "cJ2MGVYgnZZVyI6Xy54XrIxj1YO2" && user.uid !== "H2oiDqPTiOcTrl4qIHVJ1523xNr2")) {
         router.push("/");
         return;
       }
