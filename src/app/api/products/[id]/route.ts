@@ -8,8 +8,6 @@ interface Product {
   price: number;
   category?: string;
   description?: string;
-  image?: string;
-  size?: string[];
   createdAt?: Date;
 }
 
