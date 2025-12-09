@@ -89,16 +89,24 @@ export default function Productpage() {
   }, []);
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchAllData = async () => {
       try {
-        const response = await axios.get<Product[]>('/api/products');
-        setProducts(response.data);
+        // Fetch all data in parallel to reduce loading time
+        const [productsResponse, promotionalResponse, bestSellersResponse] = await Promise.all([
+          axios.get<Product[]>('/api/products'),
+          axios.get<PromotionalProduct[]>('/api/promotional'),
+          axios.get<BestSellerProduct[]>('/api/best-sellers')
+        ]);
+
+        setProducts(productsResponse.data);
+        setPromotionalProducts(promotionalResponse.data);
+        setBestSellerProducts(bestSellersResponse.data);
 
         // Check for product query parameter and select the product
         if (searchParams) {
           const productName = searchParams.get('product');
           if (productName) {
-            const product = response.data.find(p => p.name === decodeURIComponent(productName));
+            const product = productsResponse.data.find(p => p.name === decodeURIComponent(productName));
             if (product) {
               setSelectedProduct(product);
               setActiveImage(0);
@@ -107,44 +115,20 @@ export default function Productpage() {
           }
         }
       } catch (error) {
-        console.error('Error fetching products:', error);
+        console.error('Error fetching data:', error);
         // Fallback to default products if API fails
-
       } finally {
         setLoading(false);
       }
     };
 
-    fetchProducts();
+    fetchAllData();
   }, [searchParams]);
 
   useEffect(() => {
     // Load liked products from localStorage
     const liked = JSON.parse(localStorage.getItem("likedProducts") || "[]");
     setLikedProducts(liked);
-  }, []);
-
-  useEffect(() => {
-    const fetchPromotionalProducts = async () => {
-      try {
-        const response = await axios.get<PromotionalProduct[]>('/api/promotional');
-        setPromotionalProducts(response.data);
-      } catch (error) {
-        console.error('Error fetching promotional products:', error);
-      }
-    };
-
-    const fetchBestSellerProducts = async () => {
-      try {
-        const response = await axios.get<BestSellerProduct[]>('/api/best-sellers');
-        setBestSellerProducts(response.data);
-      } catch (error) {
-        console.error('Error fetching best seller products:', error);
-      }
-    };
-
-    fetchPromotionalProducts();
-    fetchBestSellerProducts();
   }, []);
 
   const toggleLike = (productId: number, e: React.MouseEvent) => {
@@ -480,6 +464,7 @@ export default function Productpage() {
                           sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
                           placeholder="blur"
                           blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+IRjWjBqO6O2mhP//Z"
+                          quality={75}
                         />
 
                         {/* Like Button - Top Right Corner */}

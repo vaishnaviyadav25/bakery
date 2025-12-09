@@ -1,4 +1,4 @@
-"use client";
+ "use client";
 
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -163,22 +163,18 @@ const HomePage = memo(() => {
   ], []);
 
   return (
-    <main className="bg-gradient-to-b from-[#FFDEE9] to-[#B5FFFC] text-gray-800">
+    <main className="bg-gradient-to-b from-[#FFDEE9] to-[#B5FFFC] text-gray-800" style={{ willChange: 'scroll-position' }}>
       {/* 🎨 Scrolling Promotional Banner */}
       <section className="relative w-full h-[500px] md:h-[600px] overflow-hidden">
         <Swiper
-          modules={[Autoplay, Pagination]}
+          modules={[Autoplay]}
           autoplay={{
-            delay: 600,
+            delay: 3000,
             disableOnInteraction: false,
             pauseOnMouseEnter: true,
           }}
-          speed={1000}
-          loop={false}
-          pagination={{
-            clickable: true,
-            dynamicBullets: true,
-          }}
+          speed={800}
+          loop={true}
           className="h-full w-full mt-10"
         >
           {promotionalPosters.map((poster, index) => (
@@ -528,8 +524,11 @@ const HomePage = memo(() => {
 
   <Swiper
     modules={[Autoplay]}
-    autoplay={{ delay: 2500, disableOnInteraction: false }}
-    loop={true}
+    autoplay={{
+      delay: 2500,
+      disableOnInteraction: false,
+      pauseOnMouseEnter: true,
+    }}
     spaceBetween={30}
     slidesPerView={1}
     breakpoints={{

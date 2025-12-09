@@ -32,7 +32,12 @@ export async function GET() {
       createdAt: p.createdAt?.toISOString(),
     }));
 
-    return NextResponse.json(serialized);
+    // Add cache headers for better performance
+    return NextResponse.json(serialized, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600', // Cache for 5 minutes, serve stale for 10 minutes
+      },
+    });
   } catch (error) {
     console.error("Error fetching products:", error);
     return NextResponse.json({ error: "Failed to fetch products" }, { status: 500 });
