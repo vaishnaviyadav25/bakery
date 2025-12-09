@@ -17,8 +17,6 @@ interface Product {
   images: string[];
   desc: string;
   material: string;
-  size: string;
-  care: string;
 }
 
 interface UploadResponse {
@@ -75,8 +73,6 @@ export default function Productpage() {
     images: [] as File[],
     desc: "",
     material: "",
-    size: "",
-    care: "",
   });
 
   useEffect(() => {
@@ -274,8 +270,6 @@ export default function Productpage() {
       images: [],
       desc: product.desc,
       material: product.material,
-      size: product.size,
-      care: product.care,
     });
     setShowEditForm(true);
   };
@@ -304,7 +298,7 @@ export default function Productpage() {
       if (formData.images.length > 0) {
         const formDataUpload = new FormData();
         formData.images.forEach((file) => {
-          formDataUpload.append('images', file);
+          formDataUpload.append('files', file);
         });
 
         const uploadResponse = await axios.post<UploadResponse>('/api/upload', formDataUpload, {
@@ -324,8 +318,6 @@ export default function Productpage() {
         images: imageUrls,
         desc: formData.desc,
         material: formData.material,
-        size: formData.size,
-        care: formData.care,
       };
 
       await axios.put(`/api/products/${editingProduct.id}`, productData);
@@ -353,7 +345,7 @@ export default function Productpage() {
       // Upload images to server
       const formDataUpload = new FormData();
       formData.images.forEach((file) => {
-        formDataUpload.append('images', file);
+        formDataUpload.append('files', file);
       });
 
       const uploadResponse = await axios.post<UploadResponse>('/api/upload', formDataUpload, {
@@ -372,8 +364,6 @@ export default function Productpage() {
         images: imageUrls,
         desc: formData.desc,
         material: formData.material,
-        size: formData.size,
-        care: formData.care,
       };
 
       await axios.post('/api/products', productData);
@@ -386,8 +376,6 @@ export default function Productpage() {
         images: [],
         desc: "",
         material: "",
-        size: "",
-        care: "",
       });
       setShowAddForm(false);
 
