@@ -1,79 +1,73 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getStorage } from 'firebase-admin/storage';
-import { initializeApp, getApps, cert } from 'firebase-admin/app';
+import type { NextApiRequest, NextApiResponse } from "next";
+import formidable, { File } from "formidable";
+import { v2 as cloudinary } from "cloudinary";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDGeZh16k85pSblnFf0QYyF_3ENtliYWK4",
-  authDomain: "my-shop-2c7ed.firebaseapp.com",
-  projectId: "my-shop-2c7ed",
-  storageBucket: "my-shop-2c7ed.firebasestorage.app",
-  messagingSenderId: "942958259544",
-  appId: "1:942958259544:web:cfdcd99b53ce7a7207892d",
-  measurementId: "G-3D0HZ0DJ7C"
+// Disable default body parsing (required for formidable)
+export const config = {
+  api: {
+    bodyParser: false,
+  },
 };
-  
-// Initialize Firebase Admin if not already initialized
-if (!getApps().length) {
-  initializeApp({
-    credential: cert({
-      projectId: firebaseConfig.projectId,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-    }),
-    storageBucket: firebaseConfig.storageBucket,
-  });
+
+interface UploadResponse {
+  imageUrls: string[];
 }
 
-const bucket = getStorage().bucket();
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
-export async function POST(request: NextRequest) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<UploadResponse | { message: string; error?: string }>
+) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ message: "Method not allowed" });
+  }
+
   try {
-    // Check UID from header
-    const uid = request.headers.get('x-user-uid');
-    const allowedUIDs = ["H2oiDqPTiOcTrl4qIHVJ1523xNr2", "cJ2MGVYgnZZVyI6Xy54XrIxj1YO2"];
-
-    if (!uid || !allowedUIDs.includes(uid)) {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
-    }
-
-    const data = await request.formData();
-    const files = data.getAll('images') as File[];
-
-    if (!files || files.length === 0) {
-      return NextResponse.json({ message: 'No files uploaded' }, { status: 400 });
-    }
-
-    // Upload files in parallel for better performance
-    const uploadPromises = files.map(async (file) => {
-      const bytes = await file.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-
-      // Generate unique filename
-      const filename = `${Date.now()}-${Math.random().toString(36).substring(2)}-${file.name}`;
-      const fileRef = bucket.file(`uploads/${filename}`);
-
-      // Upload to Firebase Storage
-      await fileRef.save(buffer, {
-        metadata: {
-          contentType: file.type,
-        },
-        public: true,
-      });
-
-      // Get the public URL
-      const [url] = await fileRef.getSignedUrl({
-        action: 'read',
-        expires: '03-09-2491', // Far future date for permanent access
-      });
-
-      return url;
+    const form = formidable({
+      keepExtensions: true,
+      maxFileSize: 10 * 1024 * 1024, // 10MB
     });
 
-    // Wait for all uploads to complete
-    const imageUrls = await Promise.all(uploadPromises);
+    form.parse(req, async (err, fields, files) => {
+      if (err) {
+        console.error("Error parsing form:", err);
+        return res.status(500).json({ message: "Error parsing form", error: err.message });
+      }
 
-    return NextResponse.json({ imageUrls });
+      const uploadedFiles = files.images as File[] | File;
+      if (!uploadedFiles) {
+        return res.status(400).json({ message: "No files uploaded" });
+      }
+
+      const fileArray = Array.isArray(uploadedFiles) ? uploadedFiles : [uploadedFiles];
+      const imageUrls: string[] = [];
+
+      try {
+        // Upload each file to Cloudinary
+        for (const file of fileArray) {
+          const result = await cloudinary.uploader.upload(file.filepath, {
+            folder: "products", // Optional folder
+          });
+          imageUrls.push(result.secure_url);
+        }
+
+        return res.status(200).json({ imageUrls });
+      } catch (uploadError) {
+        console.error("Cloudinary upload error:", uploadError);
+        return res.status(500).json({
+          message: "Error uploading to Cloudinary",
+          error: (uploadError as Error).message,
+        });
+      }
+    });
   } catch (error) {
-    console.error('Upload error:', error);
-    return NextResponse.json({ message: 'Error uploading files', error: error instanceof Error ? error.message : 'Unknown error' }, { status: 500 });
+    console.error("Upload error:", error);
+    return res.status(500).json({ message: "Error uploading files", error: (error as Error).message });
   }
 }
