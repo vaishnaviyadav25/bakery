@@ -693,7 +693,7 @@ const HomePage = memo(() => {
 
       {/* 💬 Floating WhatsApp Button - Small Round */}
       <motion.a
-        href="https://wa.me/917722893524?text=Hi!%20I%27m%20interested%20in%20your%20handmade%20products%20%E2%9C%A8"
+        href="https://wa.me/919893375626?text=Hi!%20I%27m%20interested%20in%20your%20handmade%20products%20%E2%9C%A8"
         target="_blank"
         rel="noopener noreferrer"
         className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-[#25D366] hover:bg-[#20BA5A] text-white rounded-full flex items-center justify-center shadow-2xl hover:shadow-green-500/50 transition-all duration-300"
