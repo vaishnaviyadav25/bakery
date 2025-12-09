@@ -8,11 +8,12 @@ import "swiper/css";
 import "swiper/css/autoplay";
 import "swiper/css/pagination";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, lazy, Suspense, memo } from "react";
 import axios from "axios";
-import ReviewModal from "./ReviewModal";
 
-export default function HomePage() {
+const ReviewModal = lazy(() => import("./ReviewModal"));
+
+const HomePage = memo(() => {
 
   const [reviews, setReviews] = useState<Array<{ text: string; name: string; rating: number; date: string }>>([]);
   const [promotionalPosters, setPromotionalPosters] = useState<Array<{ title: string; subtitle: string; description: string; image: string; gradient: string; link: string; badge: string; }>>([]);
@@ -155,11 +156,11 @@ export default function HomePage() {
 
 
 
-  const whyChooseUsItems = [
+  const whyChooseUsItems = useMemo(() => [
     { title: "Freshly Baked Daily", desc: "Every treat is baked fresh each morning using premium ingredients — made with love to bring you something truly special 🎁", icon: "🍰" },
     { title: "Quality & Taste", desc: "Our recipes blend traditional techniques with modern flavors, creating desserts that are both delicious and memorable ✨", icon: "🧁" },
     { title: "Delivered with Care", desc: "Each order is packaged with attention to detail — because your satisfaction is as important as the taste itself 🎀", icon: "🎂" },
-  ];
+  ], []);
 
   return (
     <main className="bg-gradient-to-b from-[#FFDEE9] to-[#B5FFFC] text-gray-800">
@@ -728,4 +729,6 @@ export default function HomePage() {
       />
     </main>
   );
-}
+});
+
+export default HomePage;

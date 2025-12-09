@@ -106,7 +106,7 @@ export default function AdminProductsPage() {
       if (formData.images.length > 0) {
         const formDataUpload = new FormData();
         formData.images.forEach((file) => {
-          formDataUpload.append('images', file);
+          formDataUpload.append('files', file);
         });
 
         const uploadResponse = await axios.post<UploadResponse>('/api/upload', formDataUpload, {
@@ -126,8 +126,7 @@ export default function AdminProductsPage() {
         images: imageUrls,
         desc: formData.desc,
         material: formData.material,
-        size: formData.size,
-        care: formData.care,
+       
       };
 
       await axios.put(`/api/products/${editingProduct.id}`, productData);
@@ -283,12 +282,15 @@ export default function AdminProductsPage() {
                     required
                   >
                     <option value="">Select a category</option>
-                    <option value="Macramé">Macramé</option>
-                    <option value="Beaded Art">Beaded Art</option>
-                    <option value="Keychains">Keychains</option>
-                    <option value="Bags & Pouches">Bags & Pouches</option>
-                    <option value="Wall Hangings">Wall Hangings</option>
-                    <option value="Jewelry">Jewelry</option>
+                      <option value="Chocolate Cakes">Chocolate Cakes</option>
+                      <option value="Vanilla Cakes">Vanilla Cakes</option>
+                      <option value="Fruit Cakes">Fruit Cakes</option>
+                      <option value="Cupcakes">Cupcakes</option>
+                      <option value="Cookies">Cookies</option>
+                      <option value="Pastries">Pastries</option>
+                      <option value="Bread">Bread</option>
+                      <option value="Desserts">Desserts</option>
+                      <option value="Custom Orders">Custom Orders</option>
                   </select>
                 </div>
 
@@ -399,29 +401,6 @@ export default function AdminProductsPage() {
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Size</label>
-                  <input
-                    type="text"
-                    value={formData.size}
-                    onChange={(e) => setFormData({ ...formData, size: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all"
-                    placeholder="e.g., 10cm x 6cm"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Care Instructions</label>
-                  <input
-                    type="text"
-                    value={formData.care}
-                    onChange={(e) => setFormData({ ...formData, care: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all"
-                    placeholder="e.g., Wipe gently"
-                    required
-                  />
-                </div>
               </div>
 
               <div className="flex gap-4 pt-4">

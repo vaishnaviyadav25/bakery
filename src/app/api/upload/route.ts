@@ -5,7 +5,7 @@ import path from 'path';
 export async function POST(request: NextRequest) {
   try {
     const data = await request.formData();
-    const files = data.getAll('files') as File[];
+    const files = data.getAll('images') as File[];
 
     if (!files || files.length === 0) {
       return NextResponse.json({ message: 'No files uploaded' }, { status: 400 });

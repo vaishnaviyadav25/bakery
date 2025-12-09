@@ -4,3 +4,4 @@
 - [x] Rewrite admin/orders/route.ts to use clientPromise
 - [x] Rewrite admin/update-order-status/route.ts to use clientPromise
 - [x] Rewrite users/route.ts to use clientPromise
+- [x] Add delete functionality for promotional items

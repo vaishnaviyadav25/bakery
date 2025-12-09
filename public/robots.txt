@@ -1,0 +1,3 @@
+User-agent: *
+Disallow:
+Sitemap: https://meetbakery.vercel.app/sitemap.xml
