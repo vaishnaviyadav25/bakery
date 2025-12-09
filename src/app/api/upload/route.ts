@@ -1,5 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
-import formidable, { File } from "formidable";
+import { NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
 
 cloudinary.config({
@@ -8,49 +7,38 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-export async function POST(req: NextRequest) {
-  // Wrap formidable in a promise
-  const data = await new Promise<{ files: File[]; error?: any }>((resolve) => {
-    const form = new formidable.IncomingForm({
-      keepExtensions: true,
-      maxFileSize: 10 * 1024 * 1024,
-    });
-
-    form.parse(req as any, (err, fields, files) => {
-      if (err) resolve({ files: [], error: err });
-      else {
-        const uploadedFiles = files.images
-          ? Array.isArray(files.images)
-            ? files.images
-            : [files.images]
-          : [];
-        resolve({ files: uploadedFiles });
-      }
-    });
-  });
-
-  if (data.error) {
-    return NextResponse.json(
-      { message: "Form parse error", error: data.error.message },
-      { status: 500 }
-    );
-  }
-
-  if (data.files.length === 0) {
-    return NextResponse.json({ message: "No files uploaded" }, { status: 400 });
-  }
-
+export async function POST(req: Request) {
   try {
+    const formData = await req.formData();
+    const files = formData.getAll("files") as File[];
+
+    if (files.length === 0) {
+      return NextResponse.json({ message: "No files uploaded" }, { status: 400 });
+    }
+
     const imageUrls: string[] = [];
-    for (const file of data.files) {
-      const result = await cloudinary.uploader.upload(file.filepath, { folder: "products" });
-      imageUrls.push(result.secure_url);
+
+    for (const file of files) {
+      const bytes = await file.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+
+      const upload = await new Promise((resolve, reject) => {
+        cloudinary.uploader.upload_stream(
+          { folder: "products" },
+          (err, result) => {
+            if (err) reject(err);
+            else resolve(result);
+          }
+        ).end(buffer);
+      });
+
+      imageUrls.push((upload as any).secure_url);
     }
 
     return NextResponse.json({ imageUrls });
-  } catch (err: any) {
+  } catch (error: any) {
     return NextResponse.json(
-      { message: "Cloudinary upload failed", error: err.message },
+      { message: "Upload failed", error: error.message },
       { status: 500 }
     );
   }
