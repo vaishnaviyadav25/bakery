@@ -36,6 +36,31 @@ export async function GET(req: NextRequest, context: { params: Promise<{ id: str
   }
 }
 
+// PUT / update a product
+
+export async function PUT(req: NextRequest, context: { params: Promise<{ id: string }> }) {
+  const { id } = await context.params;
+  try {
+    const body: Partial<Product> = await req.json();
+    const client = await clientPromise;
+    const db = client.db("meetbakery");
+
+    const result = await db.collection<Product>("products").updateOne(
+      { _id: new ObjectId(id) },
+      { $set: body }
+    );
+
+    if (result.matchedCount === 0) {
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ message: "Product updated successfully" });
+  } catch (error) {
+    console.error("Error updating product:", error);
+    return NextResponse.json({ error: "Failed to update product" }, { status: 500 });
+  }
+}
+
 // PATCH / update a product
 
 export async function PATCH(req: NextRequest, context: { params: Promise<{ id: string }> }) {
