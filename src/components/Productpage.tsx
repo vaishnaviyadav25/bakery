@@ -400,7 +400,7 @@ export default function Productpage() {
           >
             Discover Beautiful Creations That Inspire 🌸
           </motion.h1>
-{(currentUser?.uid === "cJ2MGVYgnZZVyI6Xy54XrIxj1YO2" || currentUser?.uid === "H2oiDqPTiOcTrl4qIHVJ1523xNr2") &&(
+          {(currentUser?.uid === "cJ2MGVYgnZZVyI6Xy54XrIxj1YO2" || currentUser?.uid === "H2oiDqPTiOcTrl4qIHVJ1523xNr2") && (
             <div className="text-center mb-8">
               <button
                 onClick={() => setShowAddForm(true)}
@@ -459,8 +459,8 @@ export default function Productpage() {
                         <button
                           onClick={(e) => toggleLike(product.id, e)}
                           className={`absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 ${likedProducts.includes(product.id)
-                              ? 'bg-red-500 text-white shadow-lg'
-                              : 'bg-white/80 text-gray-600 hover:bg-white shadow-md'
+                            ? 'bg-red-500 text-white shadow-lg'
+                            : 'bg-white/80 text-gray-600 hover:bg-white shadow-md'
                             }`}
                         >
                           {likedProducts.includes(product.id) ? '❤️' : '🤍'}
@@ -468,14 +468,14 @@ export default function Productpage() {
                       </div>
 
                       {/* Admin Buttons - Below Image */}
-                    {(currentUser?.uid === "cJ2MGVYgnZZVyI6Xy54XrIxj1YO2" || currentUser?.uid === "H2oiDqPTiOcTrl4qIHVJ1523xNr2") && (
+                      {(currentUser?.uid === "cJ2MGVYgnZZVyI6Xy54XrIxj1YO2" || currentUser?.uid === "H2oiDqPTiOcTrl4qIHVJ1523xNr2") && (
                         <div className="flex justify-center gap-1 mt-2">
                           {/* Add/Remove from Promotional Button */}
                           <button
                             onClick={(e) => promotionalProducts.some(p => p.title === product.name) ? removeFromPromotional(product, e) : addToPromotional(product, e)}
                             className={`w-8 h-8 rounded-full text-white flex items-center justify-center transition-all duration-300 shadow-md ${promotionalProducts.some(p => p.title === product.name)
-                                ? 'bg-red-500 hover:bg-red-600'
-                                : 'bg-blue-500 hover:bg-blue-600'
+                              ? 'bg-red-500 hover:bg-red-600'
+                              : 'bg-blue-500 hover:bg-blue-600'
                               }`}
                             title={promotionalProducts.some(p => p.title === product.name) ? "Remove from Promotional Banner" : "Add to Promotional Banner"}
                           >
@@ -486,8 +486,8 @@ export default function Productpage() {
                           <button
                             onClick={(e) => bestSellerProducts.some(p => p.title === product.name) ? removeFromBestSellers(product, e) : addToBestSellers(product, e)}
                             className={`w-8 h-8 rounded-full text-white flex items-center justify-center transition-all duration-300 shadow-md ${bestSellerProducts.some(p => p.title === product.name)
-                                ? 'bg-red-500 hover:bg-red-600'
-                                : 'bg-green-500 hover:bg-green-600'
+                              ? 'bg-red-500 hover:bg-red-600'
+                              : 'bg-green-500 hover:bg-green-600'
                               }`}
                             title={bestSellerProducts.some(p => p.title === product.name) ? "Remove from Best Sellers" : "Add to Best Sellers"}
                           >
@@ -725,10 +725,26 @@ export default function Productpage() {
                         <option value="Fruit Cakes">Fruit Cakes</option>
                         <option value="Cupcakes">Cupcakes</option>
                         <option value="Cookies">Cookies</option>
+                        <option value="Brownies">Brownies</option>
                         <option value="Pastries">Pastries</option>
+                        <option value="Cheese Pastry">Cheese Pastry</option>
+                        <option value="Puff Pastry">Puff Pastry</option>
                         <option value="Bread">Bread</option>
+                        <option value="Garlic Bread">Garlic Bread</option>
+                        <option value="Buns & Rolls">Buns & Rolls</option>
                         <option value="Desserts">Desserts</option>
+                        <option value="Jar Cakes">Jar Cakes</option>
+                        <option value="Dry Cakes">Dry Cakes</option>
+                        <option value="Muffins">Muffins</option>
+                        <option value="Tarts">Tarts</option>
+                        <option value="Doughnuts">Doughnuts</option>
                         <option value="Custom Orders">Custom Orders</option>
+                        <option value="Birthday Cakes">Birthday Cakes</option>
+                        <option value="Anniversary Cakes">Anniversary Cakes</option>
+                        <option value="Kids Theme Cakes">Kids Theme Cakes</option>
+                        <option value="Tea Time Snacks">Tea Time Snacks</option>
+                        <option value="Savoury Items">Savoury Items</option>
+
                       </select>
                     </div>
 
@@ -906,10 +922,26 @@ export default function Productpage() {
                         <option value="Fruit Cakes">Fruit Cakes</option>
                         <option value="Cupcakes">Cupcakes</option>
                         <option value="Cookies">Cookies</option>
+                        <option value="Brownies">Brownies</option>
                         <option value="Pastries">Pastries</option>
+                        <option value="Cheese Pastry">Cheese Pastry</option>
+                        <option value="Puff Pastry">Puff Pastry</option>
                         <option value="Bread">Bread</option>
+                        <option value="Garlic Bread">Garlic Bread</option>
+                        <option value="Buns & Rolls">Buns & Rolls</option>
                         <option value="Desserts">Desserts</option>
+                        <option value="Jar Cakes">Jar Cakes</option>
+                        <option value="Dry Cakes">Dry Cakes</option>
+                        <option value="Muffins">Muffins</option>
+                        <option value="Tarts">Tarts</option>
+                        <option value="Doughnuts">Doughnuts</option>
                         <option value="Custom Orders">Custom Orders</option>
+                        <option value="Birthday Cakes">Birthday Cakes</option>
+                        <option value="Anniversary Cakes">Anniversary Cakes</option>
+                        <option value="Kids Theme Cakes">Kids Theme Cakes</option>
+                        <option value="Tea Time Snacks">Tea Time Snacks</option>
+                        <option value="Savoury Items">Savoury Items</option>
+
                       </select>
                     </div>
 

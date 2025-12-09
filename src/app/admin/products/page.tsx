@@ -126,7 +126,7 @@ export default function AdminProductsPage() {
         images: imageUrls,
         desc: formData.desc,
         material: formData.material,
-       
+
       };
 
       await axios.put(`/api/products/${editingProduct.id}`, productData);
@@ -282,15 +282,31 @@ export default function AdminProductsPage() {
                     required
                   >
                     <option value="">Select a category</option>
-                      <option value="Chocolate Cakes">Chocolate Cakes</option>
-                      <option value="Vanilla Cakes">Vanilla Cakes</option>
-                      <option value="Fruit Cakes">Fruit Cakes</option>
-                      <option value="Cupcakes">Cupcakes</option>
-                      <option value="Cookies">Cookies</option>
-                      <option value="Pastries">Pastries</option>
-                      <option value="Bread">Bread</option>
-                      <option value="Desserts">Desserts</option>
-                      <option value="Custom Orders">Custom Orders</option>
+                    <option value="Chocolate Cakes">Chocolate Cakes</option>
+                    <option value="Vanilla Cakes">Vanilla Cakes</option>
+                    <option value="Fruit Cakes">Fruit Cakes</option>
+                    <option value="Cupcakes">Cupcakes</option>
+                    <option value="Cookies">Cookies</option>
+                    <option value="Brownies">Brownies</option>
+                    <option value="Pastries">Pastries</option>
+                    <option value="Cheese Pastry">Cheese Pastry</option>
+                    <option value="Puff Pastry">Puff Pastry</option>
+                    <option value="Bread">Bread</option>
+                    <option value="Garlic Bread">Garlic Bread</option>
+                    <option value="Buns & Rolls">Buns & Rolls</option>
+                    <option value="Desserts">Desserts</option>
+                    <option value="Jar Cakes">Jar Cakes</option>
+                    <option value="Dry Cakes">Dry Cakes</option>
+                    <option value="Muffins">Muffins</option>
+                    <option value="Tarts">Tarts</option>
+                    <option value="Doughnuts">Doughnuts</option>
+                    <option value="Custom Orders">Custom Orders</option>
+                    <option value="Birthday Cakes">Birthday Cakes</option>
+                    <option value="Anniversary Cakes">Anniversary Cakes</option>
+                    <option value="Kids Theme Cakes">Kids Theme Cakes</option>
+                    <option value="Tea Time Snacks">Tea Time Snacks</option>
+                    <option value="Savoury Items">Savoury Items</option>
+
                   </select>
                 </div>
 
